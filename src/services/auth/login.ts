@@ -3,6 +3,7 @@
 import { cookies } from "next/headers"
 import { AuthConsts } from "@/constants/auth"
 import { LoginResponse } from "@/types/auth"
+import { encryptData } from "./encrypt-data"
 
 interface LoginArgs {
   email: string
@@ -27,9 +28,17 @@ export async function login(userInfo: LoginArgs) {
   const parsedData: LoginResponse = await data.json()
 
   if (parsedData.error) throw new Error(parsedData.msgUser)
-
-  cookieStore.set(AuthConsts.SESSION, parsedData.jwt)
-  cookieStore.set(AuthConsts.PROFILE_DATA, JSON.stringify(parsedData.nome))
+    
+  cookieStore.set(AuthConsts.SESSION, await encryptData(parsedData.jwt), {
+    httpOnly: true, // Apenas acessível pelo servidor
+    secure: true, // Apenas via HTTPS
+    sameSite: 'strict', // Apenas em situações de mesmo site
+  })
+  cookieStore.set(AuthConsts.PROFILE_DATA, await encryptData(JSON.stringify(parsedData.nome)), {
+    httpOnly: true, // Apenas acessível pelo servidor
+    secure: true, // Apenas via HTTPS
+    sameSite: 'strict', // Apenas em situações de mesmo site
+  })
 
   return {
     msg: parsedData.msgUser

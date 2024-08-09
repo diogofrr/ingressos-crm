@@ -19,6 +19,7 @@ export default function Login() {
           <Link
             href="https://wa.me/5531971890386?text=Pede%20pro%20Diogo%20cadastrar%20meu%20acesso."
             className="text-blue-500 hover:underline text-base"
+            target="_blank"
           >
             Solicite seu acesso
           </Link>

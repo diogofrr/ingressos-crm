@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation"
-import { verifyHasSession } from "@/services/auth/verifyHasSession"
+import { verifyHasSession } from "@/services/auth/verify-has-session"
 
 interface HomeLayoutProps {
   children: React.ReactNode
