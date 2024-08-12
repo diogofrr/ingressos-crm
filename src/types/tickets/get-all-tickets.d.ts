@@ -18,5 +18,8 @@ export interface GetAllTicketsData {
 }
 
 export interface GetAllTicketsResponse extends ResponseDTO {
- result: GetAllTicketsData[];
+ result: {
+  total: number,
+  tickets: GetAllTicketsData[]
+ };
 }

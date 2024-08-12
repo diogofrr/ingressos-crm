@@ -30,14 +30,14 @@ export async function login(userInfo: LoginArgs) {
   if (parsedData.error) throw new Error(parsedData.msgUser)
     
   cookieStore.set(AuthConsts.SESSION, await encryptData(parsedData.jwt), {
-    httpOnly: true, // Apenas acessível pelo servidor
-    secure: true, // Apenas via HTTPS
-    sameSite: 'strict', // Apenas em situações de mesmo site
+    httpOnly: true,
+    secure: true,
+    sameSite: 'strict',
   })
   cookieStore.set(AuthConsts.PROFILE_DATA, await encryptData(JSON.stringify(parsedData.nome)), {
-    httpOnly: true, // Apenas acessível pelo servidor
-    secure: true, // Apenas via HTTPS
-    sameSite: 'strict', // Apenas em situações de mesmo site
+    httpOnly: true,
+    secure: true,
+    sameSite: 'strict',
   })
 
   return {

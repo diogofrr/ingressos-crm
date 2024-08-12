@@ -8,7 +8,11 @@ import { useState } from "react";
 
 type SEARCH_TYPE = 'cpf' | 'name'
 
-export default function SearchBar() {
+interface SearchBarProps {
+  disabled: boolean
+}
+
+export default function SearchBar({ disabled }: SearchBarProps) {
   const [searchType, setSearchType] = useState<SEARCH_TYPE>('name')
 
   const initialValues = {
@@ -52,6 +56,7 @@ export default function SearchBar() {
           value={values.search}
           type="text"
           hideLabel={true}
+          disabled={disabled}
           className="w-full sm:w-[380px] h-12 rounded-tr-none rounded-br-none"
         />
         <Button className="h-12 rounded-tl-none rounded-bl-none px-4 max-w-14" type="submit">

@@ -8,7 +8,7 @@ interface HomeLayoutProps {
 export default async function HomeLayout({ children }: HomeLayoutProps) {
   const hasSession = await verifyHasSession()
 
-  if (!hasSession) redirect('/auth/login')
+  if (hasSession) return children
 
-  return children
+  redirect('/auth/login')
 }

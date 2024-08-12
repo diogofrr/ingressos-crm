@@ -1,7 +1,7 @@
 import { useState } from "react";
 
-export default function useLoading() {
-  const [loading, setLoading] = useState(false)
+export default function useLoading(initialState?: boolean) {
+  const [loading, setLoading] = useState(initialState ?? false)
 
   const handleStartLoading = () => setLoading(true)
   const handleStopLoading = () => setLoading(false)

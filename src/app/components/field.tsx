@@ -33,7 +33,7 @@ export default function Field({
     <div className="flex flex-col w-full">
       <label
         htmlFor={name}
-        className={`font-medium relative top-3 left-3 bg-white px-2 max-w-max rounded-lg text-base ${hideLabel && 'hidden'}`}
+        className={`font-medium text-slate-950 relative top-3 left-3 bg-white px-2 max-w-max rounded-lg text-base ${hideLabel && 'hidden'}`}
       >
         {label}
       </label>
@@ -53,6 +53,9 @@ export default function Field({
             h-12 w-full
             px-4 py-3
             focus:outline-none
+            border-slate-200
+            disabled:bg-slate-100
+            text-slate-950
             ${!error && "focus:border-blue-500"}
             ${error && "border-red-600"}
             ${className}
@@ -68,6 +71,7 @@ export default function Field({
               ${!error && "peer-focus:border-blue-500"}
               ${error && "border-red-600"} 
               cursor-pointer
+              text-slate-950
             `}
             onClick={() => setShowPassword((prevState) => !prevState)}
           >

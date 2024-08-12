@@ -4,7 +4,11 @@ import { PlusIcon } from "@/assets/img/plus-icon"
 import useModal from "@/hooks/useModal"
 import AddUserModal from "./add-user-modal"
 
-export default function AddUserButton() {
+interface AddUserButtonProps {
+  handleGetTickets: () => void
+}
+
+export default function AddUserButton({ handleGetTickets }: AddUserButtonProps) {
   const { open, handleCloseModal, handleOpenModal } = useModal()
 
   return (
@@ -15,9 +19,7 @@ export default function AddUserButton() {
           Adicionar ingresso
         </span>
       </button>
-      {open && (
-        <AddUserModal handleCloseModal={handleCloseModal} open={open} />
-      )}
+      <AddUserModal handleCloseModal={handleCloseModal} open={open} handleGetTickets={handleGetTickets} />
     </>
   )
 }
