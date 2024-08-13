@@ -10,6 +10,10 @@ import EditUserModal from "../edit-user/edit-user-modal";
 import { useState } from "react";
 import StatusCircle from "@/app/components/statusCircle";
 import useLoading from "@/hooks/useLoading";
+import { CheckIcon } from "@/assets/img/check-icon";
+import Spinner from "@/app/components/spinner";
+import { validateTicket } from "@/services/tickets/validate-ticket";
+import ModalConfirmation from "@/app/components/modal-confirmation";
 
 interface TicketTableProps {
   tickets: GetAllTicketsData[];
@@ -23,13 +27,31 @@ export default function TicketTable({
   const [selectedItem, setSelectedItem] = useState<GetAllTicketsData>(
     tickets[0]
   );
-  const { open, handleCloseModal, handleOpenModal } = useModal();
-  const { loading, handleStartLoading, handleStopLoading } = useLoading()
+  const {
+    open: openEditModal,
+    handleCloseModal: handleCloseEditModal,
+    handleOpenModal: handleOpenEditModal,
+  } = useModal();
+  const {
+    open: openVerificationModal,
+    handleCloseModal: handleCloseVerificationModal,
+    handleOpenModal: handleOpenVerificationModal,
+  } = useModal();
+  const {
+    loading: downloading,
+    handleStartLoading: handleStartDownload,
+    handleStopLoading: handleStopDownload,
+  } = useLoading();
+  const {
+    loading: verifying,
+    handleStartLoading: handleStartVerification,
+    handleStopLoading: handleStopVerification,
+  } = useLoading();
 
   const handleDownloadTicket = async (id: string | number) => {
-    if (loading) return;
+    if (downloading) return;
 
-    handleStartLoading();
+    handleStartDownload();
     await getTicket({ id })
       .then((ticket) => {
         const link = document.createElement("a");
@@ -38,7 +60,23 @@ export default function TicketTable({
         link.click();
       })
       .catch((e) => console.log(e))
-      .finally(() => handleStopLoading());
+      .finally(() => handleStopDownload());
+  };
+
+  const handleVerifyTicket = async () => {
+    if (verifying) return;
+
+    handleStartVerification();
+    await validateTicket(selectedItem.qrcode)
+      .then(() => {
+        handleGetTickets();
+      })
+      .catch((err) => {
+        console.log(err.message);
+      })
+      .finally(() => {
+        handleStopVerification();
+      });
   };
 
   const TableHeader = () => {
@@ -72,7 +110,8 @@ export default function TicketTable({
     return (
       <tbody>
         {tickets.map((data) => {
-          const { id, full_name, cpf, telephone, status, seller } = data;
+          const { id, full_name, cpf, telephone, status, seller, qrcode } =
+            data;
           return (
             <tr className="bg-white" key={`${id} + ${full_name} + ${seller}`}>
               <th
@@ -81,29 +120,60 @@ export default function TicketTable({
               >
                 {full_name}
               </th>
-              <td className="px-6 py-4 min-w-40">{cpf}</td>
-              <td className="px-6 py-4 min-w-40">{telephone}</td>
+              <td className="px-6 py-4 min-w-44">{cpf}</td>
+              <td className="px-6 py-4 min-w-44">{telephone}</td>
               <td className="px-6 py-4 min-w-24">
                 <StatusCircle status={status} />
               </td>
               <td className="px-6 py-4 min-w-40">{seller}</td>
-              <td className="px-6 py-4 text-center min-w-32">
+              <td className="px-6 py-4 text-center min-w-44">
                 <div className="flex justify-end gap-4">
                   <button
-                    className="hover:bg-slate-200 p-1 rounded-full"
+                    className="hover:bg-slate-200 p-1 rounded-full text-slate-800 hover:text-slate-950"
                     onClick={() => {
                       setSelectedItem(data);
-                      handleOpenModal();
+                      handleOpenEditModal();
                     }}
+                    disabled={verifying || downloading}
                   >
-                    <EditIcon className="size-6 text-slate-500 cursor-pointer hover:text-slate-800" />
+                    <EditIcon className="size-6 cursor-pointer" />
                   </button>
-                  <button
-                    className="hover:bg-slate-200 p-1 rounded-full"
-                    onClick={() => handleDownloadTicket(id)}
-                  >
-                    <DownloadIcon className="size-6 text-slate-500 cursor-pointer hover:text-slate-800" />
-                  </button>
+                  {downloading && selectedItem.id === id ? (
+                    <Spinner className="size-6 text-blue-500" />
+                  ) : (
+                    <button
+                      className="hover:bg-blue-200 p-1 rounded-full hover:text-blue-800 text-blue-500"
+                      onClick={() => {
+                        setSelectedItem(data);
+                        handleDownloadTicket(id);
+                      }}
+                      disabled={verifying || downloading}
+                    >
+                      <DownloadIcon className="size-6 cursor-pointer" />
+                    </button>
+                  )}
+                  {verifying && selectedItem.id === id ? (
+                    <Spinner className="size-6 text-blue-500" />
+                  ) : (
+                    <button
+                      className={`${
+                        status !== "A"
+                          ? "text-gray-400"
+                          : "hover:bg-green-200 text-green-500 hover:text-green-800"
+                      } p-1 rounded-full`}
+                      onClick={() => {
+                        setSelectedItem(data);
+                        handleOpenVerificationModal();
+                      }}
+                      disabled={status !== "A" || verifying || downloading}
+                    >
+                      <CheckIcon
+                        className={`size-6 cursor-pointer ${
+                          status !== "A" ? "cursor-auto" : ""
+                        }`}
+                      />
+                    </button>
+                  )}
                 </div>
               </td>
             </tr>
@@ -122,10 +192,16 @@ export default function TicketTable({
         </table>
       </div>
       <EditUserModal
-        handleCloseModal={handleCloseModal}
-        open={true}
+        open={openEditModal}
+        handleCloseModal={handleCloseEditModal}
         handleGetTickets={handleGetTickets}
         ticketInfo={selectedItem}
+      />
+      <ModalConfirmation
+        open={openVerificationModal}
+        handleCloseModal={handleCloseVerificationModal}
+        message="Tem certeza que deseja autorizar a entrada dessa pessoa?"
+        asyncConfirm={handleVerifyTicket}
       />
     </>
   );

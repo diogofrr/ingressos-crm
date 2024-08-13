@@ -56,8 +56,7 @@ export default function Field({
             border-slate-200
             disabled:bg-slate-100
             text-slate-950
-            ${!error && "focus:border-blue-500"}
-            ${error && "border-red-600"}
+            ${!error ? "focus:border-blue-500" : "focus:border-red-600"}
             ${className}
           `}
           {...args}

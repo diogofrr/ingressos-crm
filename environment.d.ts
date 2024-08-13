@@ -5,6 +5,7 @@ declare global {
     interface ProcessEnv {
       API_URL: string;
       AUTH_SECRET: string;
+      AMBIENT: 'DEV' | 'PROD';
     }
   }
 }

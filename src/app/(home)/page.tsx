@@ -12,6 +12,7 @@ import { GetAllTicketsData } from "@/types/tickets/get-all-tickets";
 import useLoading from "@/hooks/useLoading";
 import TicketTableSkeleton from "./components/ticket-table/ticket-table-skeleton";
 import usePagination from "@/hooks/usePagination";
+import QRCodeButton from "./components/qrcode/qrcode-button";
 
 export default function Home() {
   const [tickets, setTickets] = useState<GetAllTicketsData[] | null>(null);
@@ -42,6 +43,7 @@ export default function Home() {
       handleStopLoading();
     }))
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [startRow, endRow]);
 
   useEffect(() => {
@@ -68,6 +70,7 @@ export default function Home() {
       <section className="min-h-[700px] h-full sm:mb-4 mx-0 sm:mx-4 bg-white shadow-lg rounded-lg flex flex-col">
         <div className="flex items-center justify-between p-4 flex-col sm:flex-row gap-4">
           <AddUserButton handleGetTickets={handleGetTickets} />
+          <QRCodeButton handleGetTickets={handleGetTickets} />
           <SearchBar disabled={tickets?.length === 0} />
         </div>
         {loading ? <TicketTableSkeleton /> : <Table />}

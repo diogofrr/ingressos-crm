@@ -4,7 +4,6 @@ import { createCipheriv, randomBytes } from 'crypto';
 
 export async function encryptData(data: string) {
   const secretKey = process.env.AUTH_SECRET
-  console.log('chamou')
   const iv = randomBytes(16);
 
   const cipher = createCipheriv('aes-256-cbc', Buffer.from(secretKey, 'hex'), iv);

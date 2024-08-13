@@ -7,6 +7,7 @@ import { statusLabel } from "@/app/components/statusCircle";
 import useAlert from "@/hooks/useAlert";
 import useLoading from "@/hooks/useLoading";
 import { cancelTicket } from "@/services/tickets/cancel-ticket";
+import { updateTicket } from "@/services/tickets/update-ticket";
 import { GetAllTicketsData } from "@/types/tickets/get-all-tickets";
 import { handleFormatCPF } from "@/utils/handleFormatCPF";
 import { handleFormatTel } from "@/utils/handleFormatTel";
@@ -37,6 +38,8 @@ export default function EditUserForm({
 
     return formattedDate;
   };
+
+  const createdAt = new Date(ticketInfo.created_at).toLocaleDateString("en-CA");
 
   const initialValues = {
     name: ticketInfo.full_name,
@@ -71,6 +74,7 @@ export default function EditUserForm({
     handleHideMessage();
 
     const formattedObject = {
+      id: ticketInfo.id,
       full_name: values.name,
       telephone: values.tel.replace(/\D/g, ""),
       cpf: values.cpf.replace(/\D/g, ""),
@@ -79,18 +83,19 @@ export default function EditUserForm({
       }),
     };
 
-    // await registerTicket(formattedObject)
-    //   .then(() => {
-    //     handleGetTickets();
-    //     handleCloseModal();
-    //   })
-    //   .catch((e) => {
-    //     handleShowMessage(e.message, "danger");
-    //   })
-    //   .finally(() => handleStopLoading());
+    await updateTicket(formattedObject)
+      .then(() => {
+        handleGetTickets();
+        handleCloseModal();
+      })
+      .catch((e) => {
+        handleShowMessage(e.message, "danger");
+      })
+      .finally(() => handleStopLoading());
   };
 
   const handleFieldDisabled = () => null;
+  const isDisabled = ticketInfo.status !== "A";
 
   return (
     <Formik
@@ -108,7 +113,7 @@ export default function EditUserForm({
             btnStyle="outline"
             className="max-w-48 ml-auto"
             onClick={handleCancelTicket}
-            disabled={ticketInfo.status === "C"}
+            disabled={isDisabled}
           >
             Cancelar Ingresso
           </Button>
@@ -121,6 +126,8 @@ export default function EditUserForm({
             placeholder={"Insira o nome do comprador"}
             onChange={handleChange}
             value={values.name}
+            disabled={isDisabled}
+            readOnly={isDisabled}
           />
           <div className="flex md:flex-row flex-col md:gap-4">
             <Field
@@ -140,6 +147,8 @@ export default function EditUserForm({
                 handleChange(e);
               }}
               value={values.cpf}
+              disabled={isDisabled}
+              readOnly={isDisabled}
             />
             <Field
               label="Data de nascimento"
@@ -150,6 +159,8 @@ export default function EditUserForm({
               placeholder={"Insira a data de nascimento do comprador"}
               onChange={handleChange}
               value={values.birthday}
+              disabled={isDisabled}
+              readOnly={isDisabled}
             />
           </div>
           <Field
@@ -169,6 +180,8 @@ export default function EditUserForm({
               handleChange(e);
             }}
             value={values.tel}
+            disabled={isDisabled}
+            readOnly={isDisabled}
           />
           <Field
             label="Vendido por"
@@ -205,10 +218,15 @@ export default function EditUserForm({
               errorMessage={""}
               placeholder={"Data de criação"}
               onChange={handleFieldDisabled}
-              value={ticketInfo.created_at}
+              value={createdAt}
             />
           </div>
-          <Button type="submit" className="mt-6" loading={loading}>
+          <Button
+            disabled={ticketInfo.status !== "A"}
+            type="submit"
+            className="mt-6"
+            loading={loading}
+          >
             Salvar
           </Button>
         </Form>

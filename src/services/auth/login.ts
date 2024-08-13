@@ -31,14 +31,20 @@ export async function login(userInfo: LoginArgs) {
     
   cookieStore.set(AuthConsts.SESSION, await encryptData(parsedData.jwt), {
     httpOnly: true,
-    secure: true,
+    secure: process.env.AMBIENT === 'PROD',
     sameSite: 'strict',
+    priority: 'high',
   })
   cookieStore.set(AuthConsts.PROFILE_DATA, await encryptData(JSON.stringify(parsedData.nome)), {
     httpOnly: true,
-    secure: true,
+    secure: process.env.AMBIENT === 'PROD',
     sameSite: 'strict',
+    priority: 'high',
   })
+
+  if (!cookieStore.has(AuthConsts.SESSION) || !cookieStore.has(AuthConsts.PROFILE_DATA)) {
+    throw new Error('Houve um erro ao salvar a sessão. Contate a equipe de desenvolvimento.')
+  }
 
   return {
     msg: parsedData.msgUser

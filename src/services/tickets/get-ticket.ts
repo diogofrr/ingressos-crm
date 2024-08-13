@@ -2,11 +2,11 @@
 
 import { getJWT } from "../auth/get-jwt";
 
-interface GetTicketProps {
+interface GetTicketArgs {
   id: string | number;
 }
 
-export async function getTicket({ id }: GetTicketProps) {
+export async function getTicket({ id }: GetTicketArgs) {
   const token = await getJWT()
   
   if (!token) throw new Error('Token not found')
