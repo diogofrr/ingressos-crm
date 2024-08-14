@@ -6,6 +6,8 @@ import Field from "@/app/components/field";
 import useAlert from "@/hooks/useAlert";
 import useLoading from "@/hooks/useLoading";
 import { registerTicket } from "@/services/tickets/register-ticket";
+import { SHOW_MESSAGE_FN } from "@/types/global-message";
+import { handleDownloadPdf } from "@/utils/handleDownloadPDF";
 import { handleFormatCPF } from "@/utils/handleFormatCPF";
 import { handleFormatTel } from "@/utils/handleFormatTel";
 import { Form, Formik } from "formik";
@@ -14,11 +16,22 @@ import * as Yup from "yup";
 interface AddUserFormProps {
   handleCloseModal: () => void;
   handleGetTickets: () => void;
+  handleShowMessage: SHOW_MESSAGE_FN;
 }
 
-export default function AddUserForm({ handleCloseModal, handleGetTickets }: AddUserFormProps) {
-  const { loading, handleStartLoading, handleStopLoading } = useLoading()
-  const { message, type, visible, handleShowMessage, handleHideMessage } = useAlert()
+export default function AddUserForm({
+  handleCloseModal,
+  handleGetTickets,
+  handleShowMessage,
+}: AddUserFormProps) {
+  const { loading, handleStartLoading, handleStopLoading } = useLoading();
+  const {
+    message,
+    type,
+    visible,
+    handleShowMessage: handleShowLocalMessage,
+    handleHideMessage,
+  } = useAlert();
 
   const initialValues = {
     name: "",
@@ -38,29 +51,37 @@ export default function AddUserForm({ handleCloseModal, handleGetTickets }: AddU
   });
 
   const handleSubmit = async (values: typeof initialValues) => {
-    handleStartLoading()
-    handleHideMessage()
+    handleStartLoading();
+    handleHideMessage();
 
     const formattedObject = {
       full_name: values.name,
-      telephone: values.tel.replace(/\D/g, ''),
-      cpf: values.cpf.replace(/\D/g, ''),
-      birth_date: new Date(values.birthday).toLocaleDateString('pt-BR', { timeZone: 'UTC' })
-    }
+      telephone: values.tel.replace(/\D/g, ""),
+      cpf: values.cpf.replace(/\D/g, ""),
+      birth_date: new Date(values.birthday).toLocaleDateString("pt-BR", {
+        timeZone: "UTC",
+      }),
+    };
 
     await registerTicket(formattedObject)
-    .then(() => {
-      handleGetTickets()
-      handleCloseModal()
-    })
-    .catch(e => {
-      handleShowMessage(e.message, "danger")
-    })
-    .finally(() => handleStopLoading())
+      .then((result) => {
+        handleGetTickets();
+        handleShowMessage(result.msgUser, "success");
+        handleCloseModal();
+        handleDownloadPdf(result.pdf);
+      })
+      .catch((e) => {
+        handleShowLocalMessage(e.message, "danger");
+      })
+      .finally(() => handleStopLoading());
   };
 
   return (
-    <Formik validationSchema={vaidationSchema} initialValues={initialValues} onSubmit={handleSubmit}>
+    <Formik
+      validationSchema={vaidationSchema}
+      initialValues={initialValues}
+      onSubmit={handleSubmit}
+    >
       {({ values, errors, handleChange }) => (
         <Form className="mt-4 flex flex-col gap-1">
           <Alert type={type} visible={visible}>
@@ -73,7 +94,11 @@ export default function AddUserForm({ handleCloseModal, handleGetTickets }: AddU
             type={"text"}
             errorMessage={errors.name ?? ""}
             placeholder={"Insira o nome do comprador"}
-            onChange={handleChange}
+            onChange={(e) => {
+              const replacedValue = e.target.value.replace(/\d/g, "");
+              e.target.value = replacedValue;
+              handleChange(e);
+            }}
             value={values.name}
           />
           <div className="flex md:flex-row flex-col md:gap-4">
@@ -86,12 +111,12 @@ export default function AddUserForm({ handleCloseModal, handleGetTickets }: AddU
               placeholder={"Insira o CPF do comprador"}
               maxLength={14}
               onChange={(e) => {
-                const value = e.target.value
-                const updatedValue = handleFormatCPF(value)
+                const value = e.target.value;
+                const updatedValue = handleFormatCPF(value);
 
-                e.target.value = updatedValue
+                e.target.value = updatedValue;
 
-                handleChange(e)
+                handleChange(e);
               }}
               value={values.cpf}
             />
@@ -115,16 +140,18 @@ export default function AddUserForm({ handleCloseModal, handleGetTickets }: AddU
             placeholder={"Insira o telefone do comprador"}
             maxLength={15}
             onChange={(e) => {
-              const value = e.target.value
-              const updatedValue = handleFormatTel(value)
+              const value = e.target.value;
+              const updatedValue = handleFormatTel(value);
 
-              e.target.value = updatedValue
+              e.target.value = updatedValue;
 
-              handleChange(e)
+              handleChange(e);
             }}
             value={values.tel}
           />
-          <Button type="submit" className="mt-6" loading={loading}>Cadastrar</Button>
+          <Button type="submit" className="mt-6" loading={loading}>
+            Cadastrar
+          </Button>
         </Form>
       )}
     </Formik>

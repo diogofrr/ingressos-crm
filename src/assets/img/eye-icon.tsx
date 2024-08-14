@@ -1,4 +1,4 @@
-import { IconProps } from "@/types/global";
+import { IconProps } from "@/types/global-message";
 
 export const EyeIcon = ({ className }: IconProps) => (
   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className}>

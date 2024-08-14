@@ -3,11 +3,13 @@
 import Alert from "@/app/components/alert";
 import Button from "@/app/components/button";
 import Field from "@/app/components/field";
-import { statusLabel } from "@/app/components/statusCircle";
+import { statusLabel } from "@/app/components/status-circle";
 import useAlert from "@/hooks/useAlert";
 import useLoading from "@/hooks/useLoading";
+import { activateTicket } from "@/services/tickets/activate-ticket";
 import { cancelTicket } from "@/services/tickets/cancel-ticket";
 import { updateTicket } from "@/services/tickets/update-ticket";
+import { SHOW_MESSAGE_FN } from "@/types/global-message";
 import { GetAllTicketsData } from "@/types/tickets/get-all-tickets";
 import { handleFormatCPF } from "@/utils/handleFormatCPF";
 import { handleFormatTel } from "@/utils/handleFormatTel";
@@ -18,15 +20,17 @@ interface EditUserFormProps {
   ticketInfo: GetAllTicketsData;
   handleCloseModal: () => void;
   handleGetTickets: () => void;
+  handleShowMessage: SHOW_MESSAGE_FN
 }
 
 export default function EditUserForm({
   ticketInfo,
   handleCloseModal,
   handleGetTickets,
+  handleShowMessage
 }: EditUserFormProps) {
   const { loading, handleStartLoading, handleStopLoading } = useLoading();
-  const { message, type, visible, handleShowMessage, handleHideMessage } =
+  const { message, type, visible, handleShowMessage: handleShowLocalMessage, handleHideMessage } =
     useAlert();
 
   const formattedDate = () => {
@@ -64,9 +68,24 @@ export default function EditUserForm({
     })
       .then((msg) => {
         handleGetTickets();
+        handleShowMessage(msg, "success");
         handleCloseModal();
       })
-      .catch((e) => console.log(e));
+      .catch((e) => handleShowLocalMessage(e.message, "danger"));
+  };
+
+  const handleReactivateTicket = async () => {
+    await activateTicket({
+      id: ticketInfo.id,
+    })
+      .then((msg) => {
+        handleGetTickets();
+        handleShowMessage(msg, "success");
+        handleCloseModal();
+      })
+      .catch((e) => {
+        handleShowLocalMessage(e.message, "danger");
+      });
   };
 
   const handleSubmit = async (values: typeof initialValues) => {
@@ -84,12 +103,13 @@ export default function EditUserForm({
     };
 
     await updateTicket(formattedObject)
-      .then(() => {
+      .then((msg) => {
         handleGetTickets();
+        handleShowMessage(msg, "success")
         handleCloseModal();
       })
       .catch((e) => {
-        handleShowMessage(e.message, "danger");
+        handleShowLocalMessage(e.message, "danger");
       })
       .finally(() => handleStopLoading());
   };
@@ -108,15 +128,27 @@ export default function EditUserForm({
           <Alert type={type} visible={visible}>
             {message}
           </Alert>
-          <Button
-            color={"red"}
-            btnStyle="outline"
-            className="max-w-48 ml-auto"
-            onClick={handleCancelTicket}
-            disabled={isDisabled}
-          >
-            Cancelar Ingresso
-          </Button>
+          {ticketInfo.status === "C" ? (
+            <Button
+              color="green"
+              btnStyle="outline"
+              className="max-w-48 ml-auto"
+              onClick={handleReactivateTicket}
+            >
+              Reativar Ingresso
+            </Button>
+          ) : (
+            <Button
+              color={"red"}
+              btnStyle="outline"
+              className="max-w-48 ml-auto"
+              onClick={handleCancelTicket}
+              disabled={isDisabled}
+            >
+              Cancelar Ingresso
+            </Button>
+          )}
+
           <Field
             label="Nome"
             name="name"
@@ -124,7 +156,11 @@ export default function EditUserForm({
             type={"text"}
             errorMessage={errors.name ?? ""}
             placeholder={"Insira o nome do comprador"}
-            onChange={handleChange}
+            onChange={(e) => {
+              const replacedValue = e.target.value.replace(/\d/g, "");
+              e.target.value = replacedValue;
+              handleChange(e);
+            }}
             value={values.name}
             disabled={isDisabled}
             readOnly={isDisabled}

@@ -1,5 +1,6 @@
 'use server'
 
+import { UpdateTicketResponse } from "@/types/tickets/update-ticket";
 import { getJWT } from "../auth/get-jwt";
 
 interface UpdateTicketArgs {
@@ -29,9 +30,9 @@ export async function updateTicket(ticketData: UpdateTicketArgs) {
   };
 
   const data = await fetch(`${process.env.API_URL}/ticket`, requestOptions)
-  const parsedData = await data.json()
+  const parsedData: UpdateTicketResponse = await data.json()
 
   if (parsedData.error) throw new Error(parsedData.msgUser)
 
-  return parsedData.result
+  return parsedData.msgUser
 }

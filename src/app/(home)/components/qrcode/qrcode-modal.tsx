@@ -6,32 +6,36 @@ import { validateTicket } from "@/services/tickets/validate-ticket";
 import useLoading from "@/hooks/useLoading";
 import Alert from "@/app/components/alert";
 import useAlert from "@/hooks/useAlert";
+import { SHOW_MESSAGE_FN } from "@/types/global-message";
 
 interface QRCodeModalProps {
   open: boolean;
   handleCloseModal: () => void;
   handleGetTickets: () => void;
+  handleShowMessage: SHOW_MESSAGE_FN;
 }
 
 export default function QRCodeModal({
   open,
   handleCloseModal,
-  handleGetTickets
+  handleGetTickets,
+  handleShowMessage
 }: QRCodeModalProps) {
   const { loading, handleStartLoading, handleStopLoading } = useLoading();
-  const { visible, type, message, handleHideMessage, handleShowMessage } = useAlert()
+  const { visible, type, message, handleHideMessage, handleShowMessage: handleShowLocalMessage } = useAlert()
 
   const handleValidateQRCode = async (hash: string) => {
     handleStartLoading();
     handleHideMessage();
 
     await validateTicket(hash)
-      .then(() => {
+      .then((msg) => {
         handleGetTickets()
+        handleShowMessage(msg, "success")
         handleCloseModal();
       })
       .catch((err) => {
-        handleShowMessage(err.message, "danger")
+        handleShowLocalMessage(err.message, "danger")
       })
       .finally(() => {
         handleStopLoading();

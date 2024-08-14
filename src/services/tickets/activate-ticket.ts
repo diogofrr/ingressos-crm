@@ -1,13 +1,13 @@
 'use server'
 
-import { CancelTicketResponse } from "@/types/tickets/cancel-ticket";
+import { ActivateTicketResponse } from "@/types/tickets/activate-ticket";
 import { getJWT } from "../auth/get-jwt";
 
-interface CancelTicketArgs {
+interface ActivateTicketArgs {
   id: string | number;
 }
 
-export async function cancelTicket({ id }: CancelTicketArgs) {
+export async function activateTicket({ id }: ActivateTicketArgs) {
   const token = await getJWT()
   
   if (!token) throw new Error('Token not found')
@@ -24,9 +24,9 @@ export async function cancelTicket({ id }: CancelTicketArgs) {
     cache: 'reload'
   };
 
-  const data = await fetch(`${process.env.API_URL}/del-ticket`, requestOptions)
-  const parsedData: CancelTicketResponse = await data.json()
-
+  const data = await fetch(`${process.env.API_URL}/activate`, requestOptions)
+  const parsedData: ActivateTicketResponse = await data.json()
+  
   if (parsedData.error) throw new Error(parsedData.msgUser)
 
   return parsedData.msgUser

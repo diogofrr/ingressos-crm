@@ -1,5 +1,6 @@
 'use server'
 
+import { GetTicketResponse } from "@/types/tickets/get-ticket";
 import { getJWT } from "../auth/get-jwt";
 
 interface GetTicketArgs {
@@ -22,8 +23,8 @@ export async function getTicket({ id }: GetTicketArgs) {
   };
 
   const data = await fetch(`${process.env.API_URL}/ticket?id=${id}`, requestOptions)
-  const parsedData = await data.json()
-  
+  const parsedData: GetTicketResponse = await data.json()
+
   if (parsedData.error) throw new Error(parsedData.msgUser)
 
   return parsedData.pdf

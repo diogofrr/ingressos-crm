@@ -1,8 +1,7 @@
 'use client'
 
+import { ALERT_TYPE } from "@/types/global-message"
 import { useState } from "react"
-
-export type ALERT_TYPE = "success" | "danger" | "warning" | "info"
 
 export default function useAlert() {
   const [visible, setVisible] = useState(false)

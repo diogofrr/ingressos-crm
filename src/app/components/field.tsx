@@ -44,10 +44,9 @@ export default function Field({
           id={name}
           onChange={onChange}
           className={`
-          peer
             ${
               type === "password"
-                ? "border-l-2 border-t-2 border-b-2 rounded-ss-lg rounded-es-lg"
+                ? "peer border-l-2 border-t-2 border-b-2 rounded-ss-lg rounded-es-lg"
                 : "border-2 rounded-lg"
             } 
             h-12 w-full

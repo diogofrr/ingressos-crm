@@ -20,7 +20,7 @@ export default function Button({
 }: ButtonProps) {
   const buttonColors = {
     gray: "bg-slate-200 disabled:hover:bg-slate-200 hover:bg-slate-500 text-slate-500",
-    green: "bg-green-500 hover:bg-green-600 text-white",
+    green: "bg-green-600 hover:bg-green-700 text-white",
     blue: "bg-blue-500 hover:bg-blue-600 text-white",
     red: "bg-red-500 hover:bg-red-600 text-white",
     "outline-gray": "bg-transparent border-2 border-gray-400 disabled:hover:border-gray-400 text-gray-400",

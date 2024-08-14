@@ -23,13 +23,13 @@ export default function Pagination({
         <button
           className="flex items-center justify-center hover:bg-slate-700 bg-slate-500 text-slate-100 rounded-lg px-4 py-2"
           onClick={handlePreviousPage}
-          >
+        >
           <ArrowLeftIcon className="size-5" />
         </button>
         <button
           className="flex items-center justify-center hover:bg-slate-700 bg-slate-500 text-slate-100 rounded-lg px-4 py-2"
           onClick={handleNextPage}
-          >
+        >
           <ArrowRightIcon className="size-5" />
         </button>
       </div>

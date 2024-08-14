@@ -8,21 +8,25 @@ import {
 import useModal from "@/hooks/useModal";
 import EditUserModal from "../edit-user/edit-user-modal";
 import { useState } from "react";
-import StatusCircle from "@/app/components/statusCircle";
+import StatusCircle from "@/app/components/status-circle";
 import useLoading from "@/hooks/useLoading";
 import { CheckIcon } from "@/assets/img/check-icon";
 import Spinner from "@/app/components/spinner";
 import { validateTicket } from "@/services/tickets/validate-ticket";
 import ModalConfirmation from "@/app/components/modal-confirmation";
+import { handleDownloadPdf } from "@/utils/handleDownloadPDF";
+import { SHOW_MESSAGE_FN } from "@/types/global-message";
 
 interface TicketTableProps {
   tickets: GetAllTicketsData[];
   handleGetTickets: () => void;
+  handleShowMessage: SHOW_MESSAGE_FN
 }
 
 export default function TicketTable({
   tickets,
   handleGetTickets,
+  handleShowMessage
 }: TicketTableProps) {
   const [selectedItem, setSelectedItem] = useState<GetAllTicketsData>(
     tickets[0]
@@ -54,10 +58,7 @@ export default function TicketTable({
     handleStartDownload();
     await getTicket({ id })
       .then((ticket) => {
-        const link = document.createElement("a");
-        link.href = ticket;
-        link.download = `ingresso-crm.pdf`;
-        link.click();
+        handleDownloadPdf(ticket)
       })
       .catch((e) => console.log(e))
       .finally(() => handleStopDownload());
@@ -158,7 +159,7 @@ export default function TicketTable({
                     <button
                       className={`${
                         status !== "A"
-                          ? "text-gray-400"
+                          ? "text-gray-400 cursor-auto"
                           : "hover:bg-green-200 text-green-500 hover:text-green-800"
                       } p-1 rounded-full`}
                       onClick={() => {
@@ -168,8 +169,8 @@ export default function TicketTable({
                       disabled={status !== "A" || verifying || downloading}
                     >
                       <CheckIcon
-                        className={`size-6 cursor-pointer ${
-                          status !== "A" ? "cursor-auto" : ""
+                        className={`size-6 ${
+                          status !== "A" ? "cursor-auto" : "cursor-pointer"
                         }`}
                       />
                     </button>
@@ -196,11 +197,12 @@ export default function TicketTable({
         handleCloseModal={handleCloseEditModal}
         handleGetTickets={handleGetTickets}
         ticketInfo={selectedItem}
+        handleShowMessage={handleShowMessage}
       />
       <ModalConfirmation
         open={openVerificationModal}
         handleCloseModal={handleCloseVerificationModal}
-        message="Tem certeza que deseja autorizar a entrada dessa pessoa?"
+        message="Tem certeza que deseja marcar esse ingresso como utilizado?"
         asyncConfirm={handleVerifyTicket}
       />
     </>

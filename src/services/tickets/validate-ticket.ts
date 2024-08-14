@@ -1,5 +1,6 @@
 'use server'
 
+import { ValidateTicketResponse } from "@/types/tickets/validate-ticket";
 import { getJWT } from "../auth/get-jwt";
 
 export async function validateTicket(hash: string) {
@@ -23,9 +24,9 @@ export async function validateTicket(hash: string) {
   };
 
   const data = await fetch(`${process.env.API_URL}/validate`, requestOptions)
-  const parsedData = await data.json()
+  const parsedData: ValidateTicketResponse = await data.json()
 
   if (parsedData.error) throw new Error(parsedData.msgUser)
 
-  return parsedData.result
+  return parsedData.msgUser
 }
