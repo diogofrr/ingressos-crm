@@ -20,18 +20,23 @@ interface EditUserFormProps {
   ticketInfo: GetAllTicketsData;
   handleCloseModal: () => void;
   handleGetTickets: () => void;
-  handleShowMessage: SHOW_MESSAGE_FN
+  handleShowMessage: SHOW_MESSAGE_FN;
 }
 
 export default function EditUserForm({
   ticketInfo,
   handleCloseModal,
   handleGetTickets,
-  handleShowMessage
+  handleShowMessage,
 }: EditUserFormProps) {
   const { loading, handleStartLoading, handleStopLoading } = useLoading();
-  const { message, type, visible, handleShowMessage: handleShowLocalMessage, handleHideMessage } =
-    useAlert();
+  const {
+    message,
+    type,
+    visible,
+    handleShowMessage: handleShowLocalMessage,
+    handleHideMessage,
+  } = useAlert();
 
   const formattedDate = () => {
     const [day, month, year] = ticketInfo.birth_date
@@ -105,7 +110,7 @@ export default function EditUserForm({
     await updateTicket(formattedObject)
       .then((msg) => {
         handleGetTickets();
-        handleShowMessage(msg, "success")
+        handleShowMessage(msg, "success");
         handleCloseModal();
       })
       .catch((e) => {

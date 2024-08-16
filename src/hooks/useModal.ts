@@ -2,13 +2,21 @@ import { useState } from "react";
 
 export default function useModal() {
   const [open, setOpen] = useState(false);
+  const [position, setPosition] = useState({
+    width: 0,
+    height: 0
+  })
 
   const handleOpenModal = () => {
-    document.body.style.overflow = 'hidden'
+    setPosition({
+      height: window.scrollY,
+      width: window.screenX
+    })
+    window.scrollTo(0, 0)
     setOpen(true)
   };
   const handleCloseModal = () => {
-    document.body.style.overflow = 'unset'
+    window.scrollTo(position.width, position.height)
     setOpen(false);
   }
 

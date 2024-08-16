@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 
 export default function useDeviceDetection() {
-  const [device, setDevice] = useState("");
+  const [device, setDevice] = useState<"Mobile" | "Tablet" | "Desktop" | "">("");
 
   useEffect(() => {
     const handleDeviceDetection = () => {

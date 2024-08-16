@@ -1,61 +1,45 @@
 "use client";
 
-import Button from "@/app/components/button";
-import Field from "@/app/components/field";
 import { SearchIcon } from "@/assets/img/search-icon";
 import { XIcon } from "@/assets/img/x-icon";
 import useLoading from "@/hooks/useLoading";
-import { searchTickets } from "@/services/tickets/search-tickets";
+import { TAG } from "@/hooks/usePagination";
 import { GetAllTicketsData } from "@/types/tickets/get-all-tickets";
 import { Form, Formik } from "formik";
 import { useState } from "react";
-
-type SEARCH_TYPE = "cpf" | "name";
 
 interface SearchBarProps {
   handleSaveTickets: (data: GetAllTicketsData[]) => void;
   handleSaveTotalRows: (total: number) => void;
   handleResetPagination: () => void;
+  handleSetQuery: (query: string) => void;
+  handleChangeTag: (tag: TAG) => void;
 }
 
 export default function SearchBar({
-  handleSaveTickets,
-  handleSaveTotalRows,
   handleResetPagination,
+  handleChangeTag,
+  handleSetQuery
 }: SearchBarProps) {
-  const [searchType, setSearchType] = useState<SEARCH_TYPE>("name");
   const [timer, setTimer] = useState<NodeJS.Timeout | null>(null);
-  const { loading, handleStartLoading, handleStopLoading } = useLoading();
-
   const initialValues = {
     search: "",
   };
 
   const handleSubmit = async (values: typeof initialValues) => {
-    handleStartLoading();
-    await searchTickets({
-      type: searchType,
-      value: values.search,
-    })
-      .then((data) => {
-        handleResetPagination();
-        handleSaveTickets(data.result);
-        handleSaveTotalRows(data.result.length);
-      })
-      .finally(() => {
-        handleStopLoading();
-      });
+    handleResetPagination();
+    handleSetQuery(values.search);
   };
 
   const handleVerifyIsCPF = (value: string) => {
     const cleaned = value.replace(/\D/g, "");
 
     if (cleaned.length === 11) {
-      setSearchType("cpf");
+      handleChangeTag("cpf")
       return cleaned.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, "$1.$2.$3-$4");
     }
 
-    setSearchType("name");
+    handleChangeTag("name")
     return value;
   };
 
@@ -66,7 +50,6 @@ export default function SearchBar({
           <input
             placeholder="Pesquise por nome ou CPF"
             name="search"
-            disabled={loading}
             onChange={(e) => {
               if (timer) clearTimeout(timer);
 

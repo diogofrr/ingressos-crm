@@ -5,7 +5,7 @@ import { getJWT } from "../auth/get-jwt";
 
 export async function validateTicket(hash: string) {
   const token = await getJWT()
-  if (!token) throw new Error('Token not found')
+  if (!token) throw new Error('Sessão expirada.')
   
   const headers = new Headers()
   headers.append('Content-Type', 'application/json')

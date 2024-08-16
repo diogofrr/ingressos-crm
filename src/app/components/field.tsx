@@ -1,5 +1,3 @@
-"use client";
-
 import { EyeIcon } from "@/assets/img/eye-icon";
 import { EyeSlashIcon } from "@/assets/img/eye-slash-icon";
 import { useState } from "react";

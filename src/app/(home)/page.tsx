@@ -25,9 +25,13 @@ export default function Home() {
     useAlert();
   const { loading, handleStartLoading, handleStopLoading } = useLoading(true);
   const {
-    totalRows,
+    tag,
+    query,
     startRow,
     endRow,
+    totalRows,
+    handleSetQuery,
+    handleChangeTag,
     handleNextPage,
     handlePreviousPage,
     handleSaveTotalRows,
@@ -47,6 +51,8 @@ export default function Home() {
     await getAllTickets({
       start_row: startRow,
       end_row: endRow,
+      tag,
+      query
     })
       .then((data) => {
         setTickets(data.tickets);
@@ -58,7 +64,7 @@ export default function Home() {
       .finally(() => {
         handleStopLoading();
       });
-  }, [startRow, endRow]);
+  }, [startRow, endRow, query]);
 
   useEffect(() => {
     handleGetTickets();
@@ -68,7 +74,18 @@ export default function Home() {
     if (loading) return <TicketTableSkeleton />;
 
     return tickets && tickets.length > 0 ? (
-      <CardList tickets={tickets} />
+      <>
+        <Pagination
+          handleNextPage={handleNextPage}
+          handlePreviousPage={handlePreviousPage}
+          totalRows={totalRows}
+        />
+        <CardList
+          handleShowMessage={handleShowMessage}
+          handleGetTickets={handleGetTickets}
+          tickets={tickets}
+        />
+      </>
     ) : (
       <EmptyList />
     );
@@ -96,7 +113,7 @@ export default function Home() {
   };
 
   return (
-    <section className="flex flex-col h-auto bg-slate-50 relative min-h-[800px]">
+    <section className="flex flex-col h-auto sm:h-dvh bg-slate-50 relative min-h-[800px]">
       <Alert
         visible={visible}
         type={type}
@@ -107,7 +124,7 @@ export default function Home() {
         {message}
       </Alert>
       <Header />
-      <section className="min-h-[700px] h-full sm:mb-4 mx-0 sm:mx-4 bg-white shadow-lg rounded-lg flex flex-col">
+      <section className="sm:min-h-[800px] h-full sm:mb-4 mx-0 sm:mx-4 bg-white sm:shadow-lg rounded-lg flex flex-col scroll-smooth">
         <div className="flex items-center justify-between p-4 flex-col sm:flex-row gap-4">
           <AddUserButton
             handleShowMessage={handleShowMessage}
@@ -121,6 +138,8 @@ export default function Home() {
             handleSaveTickets={handleSaveTickets}
             handleSaveTotalRows={handleSaveTotalRows}
             handleResetPagination={handleResetPagination}
+            handleChangeTag={handleChangeTag}
+            handleSetQuery={handleSetQuery}
           />
         </div>
         {device !== "Desktop" ? <Cards /> : <Table />}

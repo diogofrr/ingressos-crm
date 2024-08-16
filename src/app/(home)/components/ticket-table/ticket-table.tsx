@@ -3,7 +3,6 @@ import { EditIcon } from "@/assets/img/edit-icon";
 import { getTicket } from "@/services/tickets/get-ticket";
 import {
   GetAllTicketsData,
-  TICKET_STATUS,
 } from "@/types/tickets/get-all-tickets";
 import useModal from "@/hooks/useModal";
 import EditUserModal from "../edit-user/edit-user-modal";

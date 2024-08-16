@@ -10,7 +10,7 @@ interface CancelTicketArgs {
 export async function cancelTicket({ id }: CancelTicketArgs) {
   const token = await getJWT()
   
-  if (!token) throw new Error('Token not found')
+  if (!token) throw new Error('Sessão expirada.')
 
   const headers = new Headers()
   headers.append('Authorization', `Bearer ${token.jwt}`)

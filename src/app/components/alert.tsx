@@ -44,7 +44,7 @@ export default function Alert({ children, type, visible, className, handleHideMe
   }
 
   return (
-    <div className={`mt-2 h-auto ${className} ${alertStyle[type]} ${!visible ? 'hidden' : 'flex'} items-start px-2 py-4 border-l-[6px] gap-2 shadow-sm transition-all rounded-md ${floating && 'absolute rounded-none sm:rounded-md mt-0 sm:mt-2 top-0 sm:top-4 left-2/4 -translate-x-2/4 w-dvw sm:w-[400px]'}`} role="alert" tabIndex={-1}>
+    <div className={`h-auto ${className} ${alertStyle[type]} ${!visible ? 'hidden' : 'flex'} items-start px-2 py-4 border-l-[6px] gap-2 shadow-sm transition-all rounded-md ${floating && 'fixed sm:absolute rounded-none sm:rounded-md mt-0 sm:mt-2 top-0 sm:top-4 left-2/4 -translate-x-2/4 w-dvw sm:w-[400px]'}`} role="alert" tabIndex={-1}>
       <div>
         {icon[type]}
       </div>

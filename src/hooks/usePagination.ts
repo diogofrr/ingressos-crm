@@ -1,9 +1,21 @@
 import { useState } from "react";
 
+export type TAG = 'name' | 'cpf' | 'all'
+
 export default function usePagination() {
   const [startRow, setStartRow] = useState(0)
   const [endRow, setEndRow] = useState(10)
+  const [query, setQuery] = useState('')
+  const [tag, setTag] = useState<TAG>('all')
   const [totalRows, setTotalRows] = useState(0)
+
+  const handleSetQuery = (query: string) => {
+    setQuery(query)
+  }
+
+  const handleChangeTag = (tag: TAG) => {
+    setTag(tag)
+  }
 
   const handleNextPage = () => {
     if (endRow >= totalRows) return
@@ -29,10 +41,14 @@ export default function usePagination() {
   return {
     startRow,
     endRow,
+    query,
+    tag,
     totalRows,
     handleNextPage,
     handlePreviousPage,
     handleResetPagination,
-    handleSaveTotalRows
+    handleSaveTotalRows,
+    handleSetQuery,
+    handleChangeTag
   }
 }
