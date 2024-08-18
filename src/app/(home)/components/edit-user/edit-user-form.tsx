@@ -59,12 +59,12 @@ export default function EditUserForm({
 
   const vaidationSchema = Yup.object().shape({
     name: Yup.string().required("Nome é obrigatório").max(60),
-    cpf: Yup.string().required("CPF é obrigatório"),
+    cpf: Yup.string().required("CPF é obrigatório").length(14, 'CPF inválido'),
     birthday: Yup.date()
       .required("Data de nascimento é obrigatória")
       .min(new Date(1900, 0, 1), "Data de nascimento inválida.")
       .max(new Date(), "Data de nascimento inválida."),
-    tel: Yup.string().required("Telefone é obrigatório"),
+    tel: Yup.string().required("Telefone é obrigatório").length(15, 'Telefone inválido'),
   });
 
   const handleCancelTicket = async () => {
