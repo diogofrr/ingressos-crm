@@ -2,10 +2,17 @@
 
 import { ValidateTicketResponse } from "@/types/tickets/validate-ticket";
 import { getJWT } from "../auth/get-jwt";
+import { ServerActionsResponse } from "@/types/actions";
 
-export async function validateTicket(hash: string) {
+export async function validateTicket(hash: string): Promise<ServerActionsResponse<null>> {
   const token = await getJWT()
-  if (!token) throw new Error('Sessão expirada.')
+  if (!token) {
+    return {
+      error: true,
+      msg: 'Sessão expirada.',
+      result: null
+    };
+  };
   
   const headers = new Headers()
   headers.append('Content-Type', 'application/json')
@@ -26,7 +33,17 @@ export async function validateTicket(hash: string) {
   const data = await fetch(`${process.env.API_URL}/validate`, requestOptions)
   const parsedData: ValidateTicketResponse = await data.json()
 
-  if (parsedData.error) throw new Error(parsedData.msgUser)
+  if (parsedData.error) {
+    return {
+      error: true,
+      msg: parsedData.msgUser,
+      result: null
+    };
+  }
 
-  return parsedData.msgUser
+  return {
+    error: false,
+    msg: parsedData.msgUser,
+    result: null
+  };
 }

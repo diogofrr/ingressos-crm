@@ -1,5 +1,6 @@
 "use server";
 
+import { ServerActionsResponse } from "@/types/actions";
 import { getJWT } from "../auth/get-jwt";
 import { RegisterTicketResponse } from "@/types/tickets/register-ticket";
 
@@ -10,9 +11,15 @@ interface RegisterTicketArgs {
   cpf: string;
 }
 
-export async function registerTicket(ticketData: RegisterTicketArgs) {
+export async function registerTicket(ticketData: RegisterTicketArgs): Promise<ServerActionsResponse<null | string>> {
   const token = await getJWT();
-  if (!token) throw new Error("Sessão expirada.");
+  if (!token) {
+    return {
+      error: true,
+      msg: 'Sessão expirada.',
+      result: null
+    };
+  };
 
   const headers = new Headers();
   headers.append("Content-Type", "application/json");
@@ -31,7 +38,17 @@ export async function registerTicket(ticketData: RegisterTicketArgs) {
   const data = await fetch(`${process.env.API_URL}/ticket`, requestOptions);
   const parsedData: RegisterTicketResponse = await data.json();
 
-  if (parsedData.error) throw new Error(parsedData.msgUser);
+  if (parsedData.error) {
+    return {
+      error: true,
+      msg: parsedData.msgUser,
+      result: null
+    };
+  }
 
-  return parsedData;
+  return  {
+    error: false,
+    msg: parsedData.msgUser,
+    result: parsedData.pdf
+  };
 }

@@ -2,15 +2,22 @@
 
 import { GetTicketResponse } from "@/types/tickets/get-ticket";
 import { getJWT } from "../auth/get-jwt";
+import { ServerActionsResponse } from "@/types/actions";
 
 interface GetTicketArgs {
   id: string | number;
 }
 
-export async function getTicket({ id }: GetTicketArgs) {
+export async function getTicket({ id }: GetTicketArgs): Promise<ServerActionsResponse<null | string>> {
   const token = await getJWT()
   
-  if (!token) throw new Error('Sessão expirada.')
+  if (!token) {
+    return {
+      error: true,
+      msg: 'Sessão expirada.',
+      result: null
+    };
+  };
 
   const headers = new Headers()
   headers.append('Authorization', `Bearer ${token.jwt}`)
@@ -25,7 +32,17 @@ export async function getTicket({ id }: GetTicketArgs) {
   const data = await fetch(`${process.env.API_URL}/ticket?id=${id}`, requestOptions)
   const parsedData: GetTicketResponse = await data.json()
 
-  if (parsedData.error) throw new Error(parsedData.msgUser)
+  if (parsedData.error) {
+    return {
+      error: true,
+      msg: parsedData.msgUser,
+      result: null
+    };
+  }
 
-  return parsedData.pdf
+  return {
+    error: false,
+    msg: parsedData.msgUser,
+    result: parsedData.pdf
+  };
 }

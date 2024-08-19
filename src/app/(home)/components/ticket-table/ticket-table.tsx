@@ -56,10 +56,15 @@ export default function TicketTable({
 
     handleStartDownload();
     await getTicket({ id })
-      .then((ticket) => {
-        handleDownloadPdf(ticket)
+      .then((res) => {
+        if (!res.result || res.error) {
+          handleShowMessage(res.msg, 'danger')
+          return
+        }
+
+        handleDownloadPdf(res.result)
       })
-      .catch((e) => console.log(e))
+      .catch((e) => console.error(e.message))
       .finally(() => handleStopDownload());
   };
 
@@ -72,7 +77,7 @@ export default function TicketTable({
         handleGetTickets();
       })
       .catch((err) => {
-        console.log(err.message);
+        console.error(err.message);
       })
       .finally(() => {
         handleStopVerification();

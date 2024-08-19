@@ -2,15 +2,21 @@
 
 import { CancelTicketResponse } from "@/types/tickets/cancel-ticket";
 import { getJWT } from "../auth/get-jwt";
+import { ServerActionsResponse } from "@/types/actions";
 
 interface CancelTicketArgs {
   id: string | number;
 }
 
-export async function cancelTicket({ id }: CancelTicketArgs) {
+export async function cancelTicket({ id }: CancelTicketArgs): Promise<ServerActionsResponse<null>> {
   const token = await getJWT()
-  
-  if (!token) throw new Error('Sessão expirada.')
+  if (!token) {
+    return {
+      error: true,
+      msg: 'Sessão expirada.',
+      result: null
+    };
+  };
 
   const headers = new Headers()
   headers.append('Authorization', `Bearer ${token.jwt}`)
@@ -27,7 +33,17 @@ export async function cancelTicket({ id }: CancelTicketArgs) {
   const data = await fetch(`${process.env.API_URL}/del-ticket`, requestOptions)
   const parsedData: CancelTicketResponse = await data.json()
 
-  if (parsedData.error) throw new Error(parsedData.msgUser)
+  if (parsedData.error) {
+    return {
+      error: true,
+      msg: parsedData.msgUser,
+      result: null
+    };
+  }
 
-  return parsedData.msgUser
+  return {
+    error: false,
+    msg: parsedData.msgUser,
+    result: null
+  };
 }
