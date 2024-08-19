@@ -78,8 +78,8 @@ export default function EditUserForm({
         }
 
         handleGetTickets();
-        handleShowMessage(res.msg, "success");
         handleCloseModal();
+        handleShowMessage(res.msg, "success");
       })
       .catch((e) => console.error(e.message));
   };
@@ -95,8 +95,8 @@ export default function EditUserForm({
         }
 
         handleGetTickets();
-        handleShowMessage(res.msg, "success");
         handleCloseModal();
+        handleShowMessage(res.msg, "success");
       })
       .catch((e) => {
         console.error(e.message)
@@ -125,8 +125,8 @@ export default function EditUserForm({
         }
 
         handleGetTickets();
-        handleShowMessage(res.msg, "success");
         handleCloseModal();
+        handleShowMessage(res.msg, "success");
       })
       .catch((e) => {
         console.error(e.message)

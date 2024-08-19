@@ -36,8 +36,8 @@ export default function QRCodeModal({
         }
 
         handleGetTickets()
-        handleShowMessage(res.msg, "success")
         handleCloseModal();
+        handleShowMessage(res.msg, "success")
       })
       .catch((err) => {
         console.error(err.message)

@@ -71,9 +71,9 @@ export default function AddUserForm({
         }
 
         handleGetTickets();
-        handleShowMessage(res.msg, "success");
         handleCloseModal();
         handleDownloadPdf(res.result);
+        handleShowMessage(res.msg, "success");
       })
       .catch((e) => {
         console.error(e.message)
