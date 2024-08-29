@@ -17,7 +17,7 @@ export default function CardList({
   const cardActions = useCard()
 
   return (
-    <div className="h-full mx-4 flex flex-col gap-4 py-4">
+    <div className="h-full mx-4 flex flex-col gap-4 py-4" id="cards-content">
       {tickets.map((ticket) => {
         return (
           <Card

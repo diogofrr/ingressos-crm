@@ -6,8 +6,13 @@ export default function useModal() {
     width: 0,
     height: 0
   })
+  const element = document.getElementById("cards-content");
 
   const handleOpenModal = () => {
+    if (element) {
+      element.style.overflow = "hidden";
+    }
+
     setPosition({
       height: window.scrollY,
       width: window.screenX
@@ -16,6 +21,10 @@ export default function useModal() {
     setOpen(true)
   };
   const handleCloseModal = () => {
+    if (element) {
+      element.style.overflow = "auto";
+    }
+
     window.scrollTo(position.width, position.height)
     setOpen(false);
   }

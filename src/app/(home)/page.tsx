@@ -118,7 +118,7 @@ export default function Home() {
   };
 
   return (
-    <section className="flex flex-col h-auto sm:h-dvh bg-slate-50 relative min-h-[800px]">
+    <section className="flex flex-col h-auto sm:h-dvh bg-slate-50 relative min-h-[800px]" id="main-content">
       <Alert
         visible={visible}
         type={type}
