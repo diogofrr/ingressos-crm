@@ -11,6 +11,7 @@ import { cancelTicket } from "@/services/tickets/cancel-ticket";
 import { updateTicket } from "@/services/tickets/update-ticket";
 import { SHOW_MESSAGE_FN } from "@/types/global-message";
 import { GetAllTicketsData } from "@/types/tickets/get-all-tickets";
+import { handleDeepEqual } from "@/utils/handleDeepEqual";
 import { handleFormatCPF } from "@/utils/handleFormatCPF";
 import { handleFormatTel } from "@/utils/handleFormatTel";
 import { Form, Formik } from "formik";
@@ -278,7 +279,7 @@ export default function EditUserForm({
             />
           </div>
           <Button
-            disabled={ticketInfo.status !== "A"}
+            disabled={ticketInfo.status !== "A" || Boolean(handleDeepEqual(values, initialValues))}
             type="submit"
             className="mt-6"
             loading={loading}
