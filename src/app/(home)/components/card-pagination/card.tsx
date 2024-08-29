@@ -37,11 +37,16 @@ export default function Card({
 
     handleStartDownload();
     await getTicket({ id: ticket.id })
-      .then((ticket) => {
-        handleDownloadPdf(ticket);
+      .then((res) => {
+        if (!res.result || res.error) {
+          handleShowMessage(res.msg, 'danger')
+          return
+        }
+
+        handleDownloadPdf(res.result);
       })
       .catch((e) => {
-        handleShowMessage(e.message, "danger");
+        console.error(e.message);
       })
       .finally(() => handleStopDownload());
   };

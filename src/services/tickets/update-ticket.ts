@@ -2,6 +2,7 @@
 
 import { UpdateTicketResponse } from "@/types/tickets/update-ticket";
 import { getJWT } from "../auth/get-jwt";
+import { ServerActionsResponse } from "@/types/actions";
 
 interface UpdateTicketArgs {
   id: number
@@ -11,9 +12,15 @@ interface UpdateTicketArgs {
   cpf: string
 }
 
-export async function updateTicket(ticketData: UpdateTicketArgs) {
+export async function updateTicket(ticketData: UpdateTicketArgs): Promise<ServerActionsResponse<null>> {
   const token = await getJWT()
-  if (!token) throw new Error('Sessão expirada.')
+  if (!token) {
+    return {
+      error: true,
+      msg: 'Sessão expirada.',
+      result: null
+    };
+  };
 
   const headers = new Headers()
   headers.append('Content-Type', 'application/json')
@@ -32,7 +39,17 @@ export async function updateTicket(ticketData: UpdateTicketArgs) {
   const data = await fetch(`${process.env.API_URL}/ticket`, requestOptions)
   const parsedData: UpdateTicketResponse = await data.json()
 
-  if (parsedData.error) throw new Error(parsedData.msgUser)
+  if (parsedData.error) {
+    return {
+      error: true,
+      msg: parsedData.msgUser,
+      result: null
+    };
+  }
 
-  return parsedData.msgUser
+  return {
+    error: false,
+    msg: parsedData.msgUser,
+    result: null
+  };
 }

@@ -29,13 +29,18 @@ export default function QRCodeModal({
     handleHideMessage();
 
     await validateTicket(hash)
-      .then((msg) => {
+      .then((res) => {
+        if (res.error) {
+          handleShowLocalMessage(res.msg, "danger")
+          return
+        }
+
         handleGetTickets()
-        handleShowMessage(msg, "success")
         handleCloseModal();
+        handleShowMessage(res.msg, "success")
       })
       .catch((err) => {
-        handleShowLocalMessage(err.message, "danger")
+        console.error(err.message)
       })
       .finally(() => {
         handleStopLoading();

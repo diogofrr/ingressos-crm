@@ -54,12 +54,17 @@ export default function Home() {
       tag,
       query
     })
-      .then((data) => {
-        setTickets(data.tickets);
-        handleSaveTotalRows(data.total);
+    .then((data) => {
+        if (!data.result || data.error) {
+          handleShowMessage(data.msg, 'danger')
+          return
+        }
+
+        setTickets(data.result.tickets);
+        handleSaveTotalRows(data.result.total);
       })
       .catch((e) => {
-        handleShowMessage(e.message, "danger");
+        console.error(e.message);
       })
       .finally(() => {
         handleStopLoading();

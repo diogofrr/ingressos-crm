@@ -4,13 +4,14 @@ import { cookies } from "next/headers"
 import { AuthConsts } from "@/constants/auth"
 import { LoginResponse } from "@/types/auth"
 import { encryptData } from "./encrypt-data"
+import { ServerActionsResponse } from "@/types/actions"
 
 interface LoginArgs {
   email: string
   password: string
 }
 
-export async function login(userInfo: LoginArgs) {
+export async function login(userInfo: LoginArgs): Promise<ServerActionsResponse<string | null>> {
   const cookieStore = cookies()
 
   const headers = new Headers()
@@ -27,7 +28,13 @@ export async function login(userInfo: LoginArgs) {
   const data = await fetch(`${process.env.API_URL}/login`, requestOptions)
   const parsedData: LoginResponse = await data.json()
 
-  if (parsedData.error) throw new Error(parsedData.msgUser)
+  if (parsedData.error) {
+    return {
+      error: true,
+      msg: parsedData.msgUser,
+      result: null
+    }
+  }
     
   cookieStore.set(AuthConsts.SESSION, await encryptData(parsedData.jwt), {
     httpOnly: true,
@@ -43,10 +50,16 @@ export async function login(userInfo: LoginArgs) {
   })
 
   if (!cookieStore.has(AuthConsts.SESSION) || !cookieStore.has(AuthConsts.PROFILE_DATA)) {
-    throw new Error('Houve um erro ao salvar a sessão. Contate a equipe de desenvolvimento.')
+    return {
+      error: true,
+      msg: 'Houve um erro ao salvar a sessão. Contate a equipe de desenvolvimento.',
+      result: null
+    }
   }
 
   return {
-    msg: parsedData.msgUser
+    error: false,
+    msg: parsedData.msgUser,
+    result: null
   }
 }

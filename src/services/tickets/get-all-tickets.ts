@@ -3,6 +3,7 @@
 import { GetAllTicketsResponse } from "@/types/tickets/get-all-tickets";
 import { getJWT } from "../auth/get-jwt";
 import { TAG } from "@/hooks/usePagination";
+import { ServerActionsResponse } from "@/types/actions";
 
 interface GetAllTicketsArgs {
   start_row: number;
@@ -16,10 +17,16 @@ export async function getAllTickets({
   end_row,
   query,
   tag,
-}: GetAllTicketsArgs) {
+}: GetAllTicketsArgs): Promise<ServerActionsResponse<GetAllTicketsResponse['result'] | null>> {
   const token = await getJWT();
 
-  if (!token) throw new Error("Sessão expirada.");
+  if (!token) {
+    return {
+      error: true,
+      msg: 'Sessão expirada.',
+      result: null
+    };
+  };
 
   const headers = new Headers();
   headers.append("Authorization", `Bearer ${token.jwt}`);
@@ -37,7 +44,17 @@ export async function getAllTickets({
   );
   const parsedData: GetAllTicketsResponse = await data.json();
 
-  if (parsedData.error) throw new Error(parsedData.msgUser);
+  if (parsedData.error) {
+    return {
+      error: true,
+      msg: parsedData.msgUser,
+      result: null
+    };
+  };
 
-  return parsedData.result;
+  return {
+    error: false,
+    msg: parsedData.msgUser,
+    result: parsedData.result
+  };
 }

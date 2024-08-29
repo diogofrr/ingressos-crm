@@ -25,10 +25,14 @@ export const LoginForm = () => {
 
     await login(values)
     .then(res => {
+      if (res.error) {
+        handleShowMessage(res.msg, 'danger')
+        return
+      }
       handleShowMessage(res.msg, 'success')
     })
     .catch(err => {
-      handleShowMessage(err.message, 'danger')
+      console.log(err.message)
     })
     .finally(() => handleStopLoading())
   }

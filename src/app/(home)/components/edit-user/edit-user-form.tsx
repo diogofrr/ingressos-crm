@@ -71,25 +71,35 @@ export default function EditUserForm({
     await cancelTicket({
       id: ticketInfo.id,
     })
-      .then((msg) => {
+      .then((res) => {
+        if (res.error) {
+          handleShowLocalMessage(res.msg, "danger")
+          return
+        }
+
         handleGetTickets();
-        handleShowMessage(msg, "success");
         handleCloseModal();
+        handleShowMessage(res.msg, "success");
       })
-      .catch((e) => handleShowLocalMessage(e.message, "danger"));
+      .catch((e) => console.error(e.message));
   };
 
   const handleReactivateTicket = async () => {
     await activateTicket({
       id: ticketInfo.id,
     })
-      .then((msg) => {
+      .then((res) => {
+        if (res.error) {
+          handleShowLocalMessage(res.msg, "danger");
+          return
+        }
+
         handleGetTickets();
-        handleShowMessage(msg, "success");
         handleCloseModal();
+        handleShowMessage(res.msg, "success");
       })
       .catch((e) => {
-        handleShowLocalMessage(e.message, "danger");
+        console.error(e.message)
       });
   };
 
@@ -108,13 +118,18 @@ export default function EditUserForm({
     };
 
     await updateTicket(formattedObject)
-      .then((msg) => {
+      .then((res) => {
+        if (res.error) {
+          handleShowLocalMessage(res.msg, "danger");
+          return
+        }
+
         handleGetTickets();
-        handleShowMessage(msg, "success");
         handleCloseModal();
+        handleShowMessage(res.msg, "success");
       })
       .catch((e) => {
-        handleShowLocalMessage(e.message, "danger");
+        console.error(e.message)
       })
       .finally(() => handleStopLoading());
   };

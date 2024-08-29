@@ -64,14 +64,19 @@ export default function AddUserForm({
     };
 
     await registerTicket(formattedObject)
-      .then((result) => {
+      .then((res) => {
+        if (!res.result || res.error) {
+          handleShowLocalMessage(res.msg, "danger");
+          return
+        }
+
         handleGetTickets();
-        handleShowMessage(result.msgUser, "success");
         handleCloseModal();
-        handleDownloadPdf(result.pdf);
+        handleDownloadPdf(res.result);
+        handleShowMessage(res.msg, "success");
       })
       .catch((e) => {
-        handleShowLocalMessage(e.message, "danger");
+        console.error(e.message)
       })
       .finally(() => handleStopLoading());
   };
