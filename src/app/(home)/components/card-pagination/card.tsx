@@ -2,29 +2,29 @@
 import StatusCircle from "@/app/components/status-circle";
 import { EllipsisIcon } from "@/assets/img/ellipsis-icon";
 import { GetAllTicketsData } from "@/types/tickets/get-all-tickets";
-import { Ref, useState } from "react";
 import EditUserModal from "../edit-user/edit-user-modal";
 import useModal from "@/hooks/useModal";
 import { SHOW_MESSAGE_FN } from "@/types/global-message";
 import useLoading from "@/hooks/useLoading";
 import { getTicket } from "@/services/tickets/get-ticket";
 import { handleDownloadPdf } from "@/utils/handleDownloadPDF";
+import { UseCard } from "@/hooks/useCard";
 
 interface CardProps {
   ticket: GetAllTicketsData;
   handleShowMessage: SHOW_MESSAGE_FN;
   handleGetTickets: () => void;
-  cardRef?: Ref<any>;
+  cardActions: UseCard
 }
 
 export default function Card({
+  cardActions,
   ticket,
   handleGetTickets,
   handleShowMessage,
-  cardRef,
 }: CardProps) {
-  const [activeOptions, setActiveOptions] = useState(false);
   const { open, handleCloseModal, handleOpenModal } = useModal();
+  const { activeOptions, handleCloseOptions, handleOpenOptions, selectedCard } = cardActions
   const {
     loading: downloading,
     handleStartLoading: handleStartDownload,
@@ -32,7 +32,7 @@ export default function Card({
   } = useLoading();
 
   const handleDownloadTicket = async () => {
-    setActiveOptions(false);
+    handleCloseOptions()
     if (downloading) return;
 
     handleStartDownload();
@@ -57,9 +57,8 @@ export default function Card({
       />
       <div
         className="w-full py-4 px-4 flex justify-between items-center border-2 rounded-lg bg-slate-50"
-        ref={cardRef}
       >
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col gap-2 w-full" onClick={handleCloseOptions}>
           <div className="flex items-center gap-2">
             <p className="font-semibold">{ticket.full_name}</p>
             <StatusCircle hideLabel status={ticket.status} />
@@ -68,14 +67,14 @@ export default function Card({
         </div>
         <div
           className={`border-2 rounded-full p-1 relative ${
-            activeOptions ? "border-black" : "border-transparent"
+            activeOptions && selectedCard === ticket.id ? "border-black" : "border-transparent"
           }`}
-          onTouchStart={() => setActiveOptions((prevState) => !prevState)}
+          onTouchStart={() => handleOpenOptions(ticket.id)}
         >
           <EllipsisIcon className="size-5" />
           <ul
             className={`${
-              activeOptions ? "block" : "hidden"
+              activeOptions && selectedCard === ticket.id ? "block" : "hidden"
             } absolute shadow-lg bg-white p-2 w-52 -right-full top-8 z-10`}
           >
             <li>
@@ -90,7 +89,7 @@ export default function Card({
               <button
                 className="p-2"
                 onTouchEnd={() => {
-                  setActiveOptions(false);
+                  handleCloseOptions()
                   handleOpenModal();
                 }}
               >
