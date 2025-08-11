@@ -7,6 +7,7 @@ import useAlert from "@/hooks/useAlert";
 import useLoading from "@/hooks/useLoading";
 import { registerTicket } from "@/services/tickets/register-ticket";
 import { SHOW_MESSAGE_FN } from "@/types/global-message";
+import { buildTicketPdf } from "@/utils/buildTicketPdf";
 import { handleDownloadPdf } from "@/utils/handleDownloadPDF";
 import { handleFormatCPF } from "@/utils/handleFormatCPF";
 import { handleFormatTel } from "@/utils/handleFormatTel";
@@ -42,12 +43,14 @@ export default function AddUserForm({
 
   const vaidationSchema = Yup.object().shape({
     name: Yup.string().required("Nome é obrigatório").max(60),
-    cpf: Yup.string().required("CPF é obrigatório").length(14, 'CPF inválido'),
+    cpf: Yup.string().required("CPF é obrigatório").length(14, "CPF inválido"),
     birthday: Yup.date()
       .required("Data de nascimento é obrigatória")
       .min(new Date(1900, 0, 1), "Data de nascimento inválida")
       .max(new Date(), "Data de nascimento inválida"),
-    tel: Yup.string().required("Telefone é obrigatório").length(15, 'Telefone inválido'),
+    tel: Yup.string()
+      .required("Telefone é obrigatório")
+      .length(15, "Telefone inválido"),
   });
 
   const handleSubmit = async (values: typeof initialValues) => {
@@ -67,16 +70,26 @@ export default function AddUserForm({
       .then((res) => {
         if (!res.result || res.error) {
           handleShowLocalMessage(res.msg, "danger");
-          return
+          return;
         }
 
         handleGetTickets();
         handleCloseModal();
-        handleDownloadPdf(res.result);
-        handleShowMessage(res.msg, "success");
+        return buildTicketPdf({
+          ticket: {
+            full_name: res.result.ticket.full_name,
+            cpf: res.result.ticket.cpf,
+            telephone: res.result.ticket.telephone,
+            qrcode: res.result.ticket.qrcode,
+          },
+          event: res.result.event,
+        }).then((dataUrl) => {
+          handleDownloadPdf(dataUrl);
+          handleShowMessage(res.msg, "success");
+        });
       })
       .catch((e) => {
-        console.error(e.message)
+        console.error(e.message);
       })
       .finally(() => handleStopLoading());
   };

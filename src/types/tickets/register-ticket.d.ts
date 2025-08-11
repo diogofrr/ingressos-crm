@@ -1,5 +1,6 @@
 import { ResponseDTO } from "../response";
+import { TicketWithEvent } from "./get-ticket";
 
 export interface RegisterTicketResponse extends ResponseDTO {
-  pdf: string
+  result: TicketWithEvent;
 }

@@ -1,31 +1,32 @@
+"use client";
+
+import ModalConfirmation from "@/app/components/modal-confirmation";
+import Spinner from "@/app/components/spinner";
+import StatusCircle from "@/app/components/status-circle";
+import { CheckIcon } from "@/assets/img/check-icon";
 import { DownloadIcon } from "@/assets/img/download-icon";
 import { EditIcon } from "@/assets/img/edit-icon";
-import { getTicket } from "@/services/tickets/get-ticket";
-import {
-  GetAllTicketsData,
-} from "@/types/tickets/get-all-tickets";
-import useModal from "@/hooks/useModal";
-import EditUserModal from "../edit-user/edit-user-modal";
-import { useState } from "react";
-import StatusCircle from "@/app/components/status-circle";
 import useLoading from "@/hooks/useLoading";
-import { CheckIcon } from "@/assets/img/check-icon";
-import Spinner from "@/app/components/spinner";
+import useModal from "@/hooks/useModal";
+import { getTicket } from "@/services/tickets/get-ticket";
 import { validateTicket } from "@/services/tickets/validate-ticket";
-import ModalConfirmation from "@/app/components/modal-confirmation";
-import { handleDownloadPdf } from "@/utils/handleDownloadPDF";
 import { SHOW_MESSAGE_FN } from "@/types/global-message";
+import { GetAllTicketsData } from "@/types/tickets/get-all-tickets";
+import { buildTicketPdf } from "@/utils/buildTicketPdf";
+import { handleDownloadPdf } from "@/utils/handleDownloadPDF";
+import { useState } from "react";
+import EditUserModal from "../edit-user/edit-user-modal";
 
 interface TicketTableProps {
   tickets: GetAllTicketsData[];
   handleGetTickets: () => void;
-  handleShowMessage: SHOW_MESSAGE_FN
+  handleShowMessage: SHOW_MESSAGE_FN;
 }
 
 export default function TicketTable({
   tickets,
   handleGetTickets,
-  handleShowMessage
+  handleShowMessage,
 }: TicketTableProps) {
   const [selectedItem, setSelectedItem] = useState<GetAllTicketsData>(
     tickets[0]
@@ -58,11 +59,14 @@ export default function TicketTable({
     await getTicket({ id })
       .then((res) => {
         if (!res.result || res.error) {
-          handleShowMessage(res.msg, 'danger')
-          return
+          handleShowMessage(res.msg, "danger");
+          return;
         }
 
-        handleDownloadPdf(res.result)
+        buildTicketPdf({
+          ticket: res.result.ticket,
+          event: res.result.event,
+        }).then((dataUrl) => handleDownloadPdf(dataUrl));
       })
       .catch((e) => console.error(e.message))
       .finally(() => handleStopDownload());
@@ -115,8 +119,7 @@ export default function TicketTable({
     return (
       <tbody>
         {tickets.map((data) => {
-          const { id, full_name, cpf, telephone, status, seller, qrcode } =
-            data;
+          const { id, full_name, cpf, telephone, status, seller } = data;
           return (
             <tr className="bg-white" key={`${id} + ${full_name} + ${seller}`}>
               <th
@@ -130,7 +133,7 @@ export default function TicketTable({
               <td className="px-6 py-4 min-w-24">
                 <StatusCircle status={status} />
               </td>
-              <td className="px-6 py-4 min-w-40">{seller}</td>
+              <td className="px-6 py-4 min-w-40">{seller.full_name}</td>
               <td className="px-6 py-4 text-center min-w-44">
                 <div className="flex justify-end gap-4">
                   <button

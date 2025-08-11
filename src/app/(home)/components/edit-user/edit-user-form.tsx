@@ -60,12 +60,14 @@ export default function EditUserForm({
 
   const vaidationSchema = Yup.object().shape({
     name: Yup.string().required("Nome é obrigatório").max(60),
-    cpf: Yup.string().required("CPF é obrigatório").length(14, 'CPF inválido'),
+    cpf: Yup.string().required("CPF é obrigatório").length(14, "CPF inválido"),
     birthday: Yup.date()
       .required("Data de nascimento é obrigatória")
       .min(new Date(1900, 0, 1), "Data de nascimento inválida.")
       .max(new Date(), "Data de nascimento inválida."),
-    tel: Yup.string().required("Telefone é obrigatório").length(15, 'Telefone inválido'),
+    tel: Yup.string()
+      .required("Telefone é obrigatório")
+      .length(15, "Telefone inválido"),
   });
 
   const handleCancelTicket = async () => {
@@ -74,8 +76,8 @@ export default function EditUserForm({
     })
       .then((res) => {
         if (res.error) {
-          handleShowLocalMessage(res.msg, "danger")
-          return
+          handleShowLocalMessage(res.msg, "danger");
+          return;
         }
 
         handleGetTickets();
@@ -92,7 +94,7 @@ export default function EditUserForm({
       .then((res) => {
         if (res.error) {
           handleShowLocalMessage(res.msg, "danger");
-          return
+          return;
         }
 
         handleGetTickets();
@@ -100,7 +102,7 @@ export default function EditUserForm({
         handleShowMessage(res.msg, "success");
       })
       .catch((e) => {
-        console.error(e.message)
+        console.error(e.message);
       });
   };
 
@@ -122,7 +124,7 @@ export default function EditUserForm({
       .then((res) => {
         if (res.error) {
           handleShowLocalMessage(res.msg, "danger");
-          return
+          return;
         }
 
         handleGetTickets();
@@ -130,7 +132,7 @@ export default function EditUserForm({
         handleShowMessage(res.msg, "success");
       })
       .catch((e) => {
-        console.error(e.message)
+        console.error(e.message);
       })
       .finally(() => handleStopLoading());
   };
@@ -250,7 +252,7 @@ export default function EditUserForm({
             errorMessage={""}
             placeholder={"Nome do vendedor"}
             onChange={handleFieldDisabled}
-            value={ticketInfo.seller}
+            value={ticketInfo.seller.full_name}
           />
           <div className="flex md:flex-row flex-col md:gap-4">
             <Field
@@ -279,7 +281,10 @@ export default function EditUserForm({
             />
           </div>
           <Button
-            disabled={ticketInfo.status !== "A" || Boolean(handleDeepEqual(values, initialValues))}
+            disabled={
+              ticketInfo.status !== "A" ||
+              Boolean(handleDeepEqual(values, initialValues))
+            }
             type="submit"
             className="mt-6"
             loading={loading}

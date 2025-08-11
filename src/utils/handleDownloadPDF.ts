@@ -1,26 +1,35 @@
-export const handleDownloadPdf = (hash: string) => {
-  const base64WithoutPrefix = hash.substr('data:application/pdf;base64,'.length)
-
-  const bytes = atob(base64WithoutPrefix)
-  let length = bytes.length
-  const out = new Uint8Array(length)
-
-  while (length--) {
-    out[length] = bytes.charCodeAt(length)
+export const handleDownloadPdf = (data: string) => {
+  // Se já for um data URL de PDF, baixa diretamente
+  if (typeof data === "string" && data.startsWith("data:application/pdf")) {
+    const link = document.createElement("a");
+    link.href = data;
+    link.download = "ingresso-crm.pdf";
+    link.click();
+    return;
   }
 
-  const blob = new Blob([out], { type: 'application/pdf' })
+  // Compatibilidade: base64 com prefixo removido anteriormente
+  const base64WithPossiblePrefix = data;
+  const base64 = base64WithPossiblePrefix.startsWith(
+    "data:application/pdf;base64,"
+  )
+    ? base64WithPossiblePrefix.substring("data:application/pdf;base64,".length)
+    : base64WithPossiblePrefix;
 
-  // Cria um link para download
-  const link = document.createElement('a');
+  const bytes = atob(base64);
+  let length = bytes.length;
+  const out = new Uint8Array(length);
+
+  while (length--) {
+    out[length] = bytes.charCodeAt(length);
+  }
+
+  const blob = new Blob([out], { type: "application/pdf" });
+
+  const link = document.createElement("a");
   const url = URL.createObjectURL(blob);
-  
   link.href = url;
-  link.download = 'ingresso-crm.pdf';
-  
-  // Simula o clique no link para iniciar o download
+  link.download = "ingresso-crm.pdf";
   link.click();
-  
-  // Limpa o objeto URL para liberar memória
   URL.revokeObjectURL(url);
-}
+};

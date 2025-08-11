@@ -1,6 +1,8 @@
+"use client";
+
 import { AlertIcon } from "@/assets/img/alert-icon";
-import Button from "./button";
 import useLoading from "@/hooks/useLoading";
+import Button from "./button";
 
 interface ModalConfirmationProps {
   open: boolean;

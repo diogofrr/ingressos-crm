@@ -1,8 +1,8 @@
 "use server";
 
 import { ServerActionsResponse } from "@/types/actions";
-import { getJWT } from "../auth/get-jwt";
 import { RegisterTicketResponse } from "@/types/tickets/register-ticket";
+import { getJWT } from "../auth/get-jwt";
 
 interface RegisterTicketArgs {
   full_name: string;
@@ -11,15 +11,17 @@ interface RegisterTicketArgs {
   cpf: string;
 }
 
-export async function registerTicket(ticketData: RegisterTicketArgs): Promise<ServerActionsResponse<null | string>> {
+export async function registerTicket(
+  ticketData: RegisterTicketArgs
+): Promise<ServerActionsResponse<null | RegisterTicketResponse["result"]>> {
   const token = await getJWT();
   if (!token) {
     return {
       error: true,
-      msg: 'Sessão expirada.',
-      result: null
+      msg: "Sessão expirada.",
+      result: null,
     };
-  };
+  }
 
   const headers = new Headers();
   headers.append("Content-Type", "application/json");
@@ -35,20 +37,20 @@ export async function registerTicket(ticketData: RegisterTicketArgs): Promise<Se
     cache: "reload",
   };
 
-  const data = await fetch(`${process.env.API_URL}/ticket`, requestOptions);
+  const data = await fetch(`${process.env.API_URL}/tickets`, requestOptions);
   const parsedData: RegisterTicketResponse = await data.json();
 
   if (parsedData.error) {
     return {
       error: true,
       msg: parsedData.msgUser,
-      result: null
+      result: null,
     };
   }
 
-  return  {
+  return {
     error: false,
     msg: parsedData.msgUser,
-    result: parsedData.pdf
+    result: parsedData.result,
   };
 }

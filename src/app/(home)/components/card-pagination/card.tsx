@@ -1,20 +1,21 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import StatusCircle from "@/app/components/status-circle";
 import { EllipsisIcon } from "@/assets/img/ellipsis-icon";
-import { GetAllTicketsData } from "@/types/tickets/get-all-tickets";
-import EditUserModal from "../edit-user/edit-user-modal";
-import useModal from "@/hooks/useModal";
-import { SHOW_MESSAGE_FN } from "@/types/global-message";
-import useLoading from "@/hooks/useLoading";
-import { getTicket } from "@/services/tickets/get-ticket";
-import { handleDownloadPdf } from "@/utils/handleDownloadPDF";
 import { UseCard } from "@/hooks/useCard";
+import useLoading from "@/hooks/useLoading";
+import useModal from "@/hooks/useModal";
+import { getTicket } from "@/services/tickets/get-ticket";
+import { SHOW_MESSAGE_FN } from "@/types/global-message";
+import { GetAllTicketsData } from "@/types/tickets/get-all-tickets";
+import { buildTicketPdf } from "@/utils/buildTicketPdf";
+import { handleDownloadPdf } from "@/utils/handleDownloadPDF";
+import EditUserModal from "../edit-user/edit-user-modal";
 
 interface CardProps {
   ticket: GetAllTicketsData;
   handleShowMessage: SHOW_MESSAGE_FN;
   handleGetTickets: () => void;
-  cardActions: UseCard
+  cardActions: UseCard;
 }
 
 export default function Card({
@@ -24,7 +25,8 @@ export default function Card({
   handleShowMessage,
 }: CardProps) {
   const { open, handleCloseModal, handleOpenModal } = useModal();
-  const { activeOptions, handleCloseOptions, handleOpenOptions, selectedCard } = cardActions
+  const { activeOptions, handleCloseOptions, handleOpenOptions, selectedCard } =
+    cardActions;
   const {
     loading: downloading,
     handleStartLoading: handleStartDownload,
@@ -32,18 +34,26 @@ export default function Card({
   } = useLoading();
 
   const handleDownloadTicket = async () => {
-    handleCloseOptions()
+    handleCloseOptions();
     if (downloading) return;
 
     handleStartDownload();
     await getTicket({ id: ticket.id })
       .then((res) => {
         if (!res.result || res.error) {
-          handleShowMessage(res.msg, 'danger')
-          return
+          handleShowMessage(res.msg, "danger");
+          return;
         }
 
-        handleDownloadPdf(res.result);
+        return buildTicketPdf({
+          ticket: {
+            full_name: res.result.ticket.full_name,
+            cpf: res.result.ticket.cpf,
+            telephone: res.result.ticket.telephone,
+            qrcode: res.result.ticket.qrcode,
+          },
+          event: res.result.event,
+        }).then((dataUrl) => handleDownloadPdf(dataUrl));
       })
       .catch((e) => {
         console.error(e.message);
@@ -60,10 +70,11 @@ export default function Card({
         ticketInfo={ticket}
         handleShowMessage={handleShowMessage}
       />
-      <div
-        className="w-full py-4 px-4 flex justify-between items-center border-2 rounded-lg bg-slate-50"
-      >
-        <div className="flex flex-col gap-2 w-full" onClick={handleCloseOptions}>
+      <div className="w-full py-4 px-4 flex justify-between items-center border-2 rounded-lg bg-slate-50">
+        <div
+          className="flex flex-col gap-2 w-full"
+          onClick={handleCloseOptions}
+        >
           <div className="flex items-center gap-2">
             <p className="font-semibold">{ticket.full_name}</p>
             <StatusCircle hideLabel status={ticket.status} />
@@ -72,7 +83,9 @@ export default function Card({
         </div>
         <div
           className={`border-2 rounded-full p-1 relative ${
-            activeOptions && selectedCard === ticket.id ? "border-black" : "border-transparent"
+            activeOptions && selectedCard === ticket.id
+              ? "border-black"
+              : "border-transparent"
           }`}
           onTouchStart={() => handleOpenOptions(ticket.id)}
         >
@@ -94,7 +107,7 @@ export default function Card({
               <button
                 className="p-2"
                 onTouchEnd={() => {
-                  handleCloseOptions()
+                  handleCloseOptions();
                   handleOpenModal();
                 }}
               >
