@@ -1,6 +1,6 @@
 import { EyeIcon } from "@/assets/img/eye-icon";
 import { EyeSlashIcon } from "@/assets/img/eye-slash-icon";
-import { useState } from "react";
+import { useId, useState } from "react";
 
 interface IField extends React.ComponentPropsWithoutRef<"input"> {
   type: string;
@@ -26,60 +26,51 @@ export default function Field({
   ...args
 }: IField) {
   const [showPassword, setShowPassword] = useState(false);
+  const inputId = useId();
 
   return (
-    <div className="flex flex-col w-full">
-      <label
-        htmlFor={name}
-        className={`font-medium text-slate-950 relative top-3 left-3 bg-white px-2 max-w-max rounded-lg text-base ${hideLabel && 'hidden'}`}
-      >
-        {label}
-      </label>
-      <div className="flex items-center">
+    <div className="form-control w-full">
+      {!hideLabel && (
+        <label htmlFor={name || inputId} className="label">
+          <span className="label-text text-base font-medium">{label}</span>
+        </label>
+      )}
+      <div className="relative">
         <input
           type={showPassword ? "text" : type}
           name={name}
-          id={name}
+          id={name || inputId}
           onChange={onChange}
-          className={`
-            ${
-              type === "password"
-                ? "peer border-l-2 border-t-2 border-b-2 rounded-ss-lg rounded-es-lg"
-                : "border-2 rounded-lg"
-            } 
-            h-12 w-full
-            px-4 py-3
-            focus:outline-none
-            border-slate-200
-            disabled:bg-slate-100
-            text-slate-950
-            ${!error ? "focus:border-blue-500" : "focus:border-red-600"}
-            ${className}
-          `}
+          className={`input input-bordered w-full h-12 ${
+            error ? "input-error" : ""
+          } ${className}`}
+          aria-invalid={error}
+          aria-errormessage={error ? `${name || inputId}-error` : undefined}
           {...args}
         />
         {type === "password" && (
-          <div
-            className={`
-              py-4 pr-4 border-t-2 border-r-2 border-b-2 rounded-ee-lg rounded-se-lg
-              h-12
-              flex items-center justify-center
-              ${!error && "peer-focus:border-blue-500"}
-              ${error && "border-red-600"} 
-              cursor-pointer
-              text-slate-950
-            `}
+          <button
+            type="button"
+            className="absolute inset-y-0 right-2 flex items-center text-base-content/60 hover:text-base-content"
             onClick={() => setShowPassword((prevState) => !prevState)}
+            aria-label={showPassword ? "Ocultar senha" : "Mostrar senha"}
           >
             {showPassword ? (
               <EyeSlashIcon className="size-6" />
             ) : (
               <EyeIcon className="size-6" />
             )}
-          </div>
+          </button>
         )}
       </div>
-      {error && <div className="text-red-600">{errorMessage}</div>}
+      {error && (
+        <span
+          id={`${name || inputId}-error`}
+          className="mt-1 text-sm text-error"
+        >
+          {errorMessage}
+        </span>
+      )}
     </div>
   );
 }

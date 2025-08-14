@@ -1,30 +1,24 @@
 "use client";
 
 import { ALERT_TYPE } from "@/types/global-message";
-import { useState } from "react";
+import { toast } from "sonner";
 
 export default function useAlert() {
-  const [visible, setVisible] = useState(false);
-  const [message, setMessage] = useState("");
-  const [type, setType] = useState<ALERT_TYPE>("info");
-
   const handleShowMessage = (message: string, type: ALERT_TYPE) => {
-    setMessage(message);
-    setType(type);
-    setVisible(true);
+    const normalized = type === "danger" ? "error" : type;
+    if (normalized === "success") toast.success(message);
+    else if (normalized === "error") toast.error(message);
+    else if (normalized === "warning") toast.warning(message);
+    else toast.info(message);
   };
 
-  const handleHideMessage = () => {
-    setVisible(false);
-    setMessage("");
-    setType("info");
-  };
+  const handleHideMessage = () => toast.dismiss();
 
   return {
     handleShowMessage,
     handleHideMessage,
-    visible,
-    message,
-    type,
+    visible: false,
+    message: "",
+    type: "info" as ALERT_TYPE,
   };
 }

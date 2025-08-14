@@ -2,8 +2,8 @@
 
 import { PlusIcon } from "@/assets/img/plus-icon";
 import useModal from "@/hooks/useModal";
-import AddUserModal from "./add-user-modal";
 import { SHOW_MESSAGE_FN } from "@/types/global-message";
+import AddUserModal from "./add-user-modal";
 
 interface AddUserButtonProps {
   handleGetTickets: () => void;
@@ -20,12 +20,10 @@ export default function AddUserButton({
     <>
       <button
         onClick={handleOpenModal}
-        className="py-2 px-3 h-12 bg-blue-500 rounded-xl flex items-center justify-center w-full sm:w-auto md:w-64"
+        className="btn btn-primary h-12 w-full sm:w-auto md:w-64"
       >
-        <PlusIcon className="size-6 text-white mr-2 sm:mr-0 md:mr-2" />
-        <span className="text-white block sm:hidden md:block">
-          Adicionar ingresso
-        </span>
+        <PlusIcon className="size-5" />
+        <span>Adicionar ingresso</span>
       </button>
       <AddUserModal
         handleShowMessage={handleShowMessage}

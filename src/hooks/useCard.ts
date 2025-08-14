@@ -2,7 +2,7 @@ import { useState } from "react";
 
 export interface UseCard {
   activeOptions: boolean;
-  selectedCard: string;
+  selectedCard: string | null;
   handleOpenOptions: (cardId: string) => void;
   handleCloseOptions: () => void;
 }
@@ -12,14 +12,20 @@ export default function useCard() {
   const [selectedCard, setSelectedCard] = useState<string | null>(null);
 
   const handleOpenOptions = (cardId: string) => {
-    setSelectedCard((prevState) => (prevState === cardId ? null : cardId));
-    setActiveOptions(
-      (prevState) => prevState === false || selectedCard !== cardId
-    );
+    setSelectedCard((prev) => {
+      const willOpen = prev !== cardId;
+      if (willOpen) {
+        setActiveOptions(true);
+        return cardId;
+      }
+      setActiveOptions(false);
+      return null;
+    });
   };
 
   const handleCloseOptions = () => {
     setSelectedCard(null);
+    setActiveOptions(false);
   };
 
   return {

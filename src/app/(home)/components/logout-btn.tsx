@@ -12,12 +12,9 @@ export default function LogoutBtn() {
       .catch((e) => console.log(e));
 
   return (
-    <button
-      className="flex items-center justify-center py-2 px-4 cursor cursor-pointer rounded-lg bg-white shadow-sm hover:shadow-md transition-shadow"
-      onClick={handleLogout}
-    >
-      <LogoutIcon className="size-6 font-medium mr-1" />
-      <span className="text-black">Sair</span>
+    <button className="btn btn-ghost" onClick={handleLogout} aria-label="Sair">
+      <LogoutIcon className="size-5 mr-1" />
+      Sair
     </button>
   );
 }

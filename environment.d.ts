@@ -9,3 +9,5 @@ declare global {
     }
   }
 }
+
+declare module 'daisyui';

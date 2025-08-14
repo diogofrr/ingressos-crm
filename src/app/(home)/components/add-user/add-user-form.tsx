@@ -101,10 +101,8 @@ export default function AddUserForm({
       onSubmit={handleSubmit}
     >
       {({ values, errors, handleChange }) => (
-        <Form className="mt-4 flex flex-col gap-1">
-          <Alert type={type} visible={visible}>
-            {message}
-          </Alert>
+        <Form className="mt-4 flex flex-col gap-1 space-y-1">
+          {/* Alert removido. Usar toasts via useAlert() */}
           <Field
             label="Nome"
             name="name"
@@ -119,7 +117,7 @@ export default function AddUserForm({
             }}
             value={values.name}
           />
-          <div className="flex md:flex-row flex-col md:gap-4">
+          <div className="flex md:flex-row flex-col md:gap-1">
             <Field
               label="CPF"
               name="cpf"
@@ -167,7 +165,7 @@ export default function AddUserForm({
             }}
             value={values.tel}
           />
-          <Button type="submit" className="mt-6" loading={loading}>
+          <Button type="submit" className="mt-1" loading={loading}>
             Cadastrar
           </Button>
         </Form>

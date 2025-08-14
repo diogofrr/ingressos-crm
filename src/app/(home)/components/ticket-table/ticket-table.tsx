@@ -6,6 +6,7 @@ import StatusCircle from "@/app/components/status-circle";
 import { CheckIcon } from "@/assets/img/check-icon";
 import { DownloadIcon } from "@/assets/img/download-icon";
 import { EditIcon } from "@/assets/img/edit-icon";
+import { EllipsisIcon } from "@/assets/img/ellipsis-icon";
 import useLoading from "@/hooks/useLoading";
 import useModal from "@/hooks/useModal";
 import { getTicket } from "@/services/tickets/get-ticket";
@@ -90,7 +91,7 @@ export default function TicketTable({
 
   const TableHeader = () => {
     return (
-      <thead className="text-xs text-gray-900 uppercase">
+      <thead className="text-xs uppercase">
         <tr>
           <th scope="col" className="px-6 py-3">
             Nome
@@ -121,10 +122,13 @@ export default function TicketTable({
         {tickets.map((data) => {
           const { id, full_name, cpf, telephone, status, seller } = data;
           return (
-            <tr className="bg-white" key={`${id} + ${full_name} + ${seller}`}>
+            <tr
+              className="bg-base-100"
+              key={`${id} + ${full_name} + ${seller}`}
+            >
               <th
                 scope="row"
-                className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap min-w-64"
+                className="px-6 py-4 font-medium whitespace-normal"
               >
                 {full_name}
               </th>
@@ -135,9 +139,9 @@ export default function TicketTable({
               </td>
               <td className="px-6 py-4 min-w-40">{seller.full_name}</td>
               <td className="px-6 py-4 text-center min-w-44">
-                <div className="flex justify-end gap-4">
+                <div className="hidden sm:flex justify-end gap-4">
                   <button
-                    className="hover:bg-slate-200 p-1 rounded-full text-slate-800 hover:text-slate-950"
+                    className="hover:bg-base-200 p-1 rounded-full"
                     onClick={() => {
                       setSelectedItem(data);
                       handleOpenEditModal();
@@ -150,7 +154,7 @@ export default function TicketTable({
                     <Spinner className="size-6 text-blue-500" />
                   ) : (
                     <button
-                      className="hover:bg-blue-200 p-1 rounded-full hover:text-blue-800 text-blue-500"
+                      className="hover:bg-primary/20 p-1 rounded-full text-primary"
                       onClick={() => {
                         setSelectedItem(data);
                         handleDownloadTicket(id);
@@ -166,8 +170,8 @@ export default function TicketTable({
                     <button
                       className={`${
                         status !== "A"
-                          ? "text-gray-400 cursor-auto"
-                          : "hover:bg-green-200 text-green-500 hover:text-green-800"
+                          ? "text-base-content/40 cursor-auto"
+                          : "hover:bg-success/20 text-success"
                       } p-1 rounded-full`}
                       onClick={() => {
                         setSelectedItem(data);
@@ -183,6 +187,72 @@ export default function TicketTable({
                     </button>
                   )}
                 </div>
+                <div className="sm:hidden dropdown dropdown-end">
+                  <div
+                    tabIndex={0}
+                    role="button"
+                    className="btn btn-ghost btn-sm rounded-full"
+                  >
+                    <EllipsisIcon className="size-5" />
+                  </div>
+                  <ul
+                    tabIndex={0}
+                    className="dropdown-content menu menu-sm bg-base-100 rounded-box z-[1] w-44 p-2 shadow"
+                  >
+                    <li>
+                      <button
+                        onClick={(e) => {
+                          const dropdown = (
+                            e.currentTarget as HTMLElement
+                          ).closest(".dropdown") as HTMLElement | null;
+                          setSelectedItem(data);
+                          handleOpenEditModal();
+                          // fecha o dropdown
+                          dropdown
+                            ?.querySelector('[role="button"]')
+                            ?.dispatchEvent(new Event("blur"));
+                        }}
+                        disabled={verifying || downloading}
+                      >
+                        Editar
+                      </button>
+                    </li>
+                    <li>
+                      <button
+                        onClick={(e) => {
+                          const dropdown = (
+                            e.currentTarget as HTMLElement
+                          ).closest(".dropdown") as HTMLElement | null;
+                          setSelectedItem(data);
+                          handleDownloadTicket(id);
+                          dropdown
+                            ?.querySelector('[role="button"]')
+                            ?.dispatchEvent(new Event("blur"));
+                        }}
+                        disabled={verifying || downloading}
+                      >
+                        Baixar
+                      </button>
+                    </li>
+                    <li>
+                      <button
+                        onClick={(e) => {
+                          const dropdown = (
+                            e.currentTarget as HTMLElement
+                          ).closest(".dropdown") as HTMLElement | null;
+                          setSelectedItem(data);
+                          handleOpenVerificationModal();
+                          dropdown
+                            ?.querySelector('[role="button"]')
+                            ?.dispatchEvent(new Event("blur"));
+                        }}
+                        disabled={status !== "A" || verifying || downloading}
+                      >
+                        Validar
+                      </button>
+                    </li>
+                  </ul>
+                </div>
               </td>
             </tr>
           );
@@ -193,8 +263,8 @@ export default function TicketTable({
 
   return (
     <>
-      <div className="relative overflow-x-auto">
-        <table className="w-full text-sm text-left rtl:text-right text-gray-500">
+      <div className="relative overflow-x-auto w-full">
+        <table className="table table-zebra w-full h-auto text-sm">
           <TableHeader />
           <TableBody />
         </table>

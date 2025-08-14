@@ -3,14 +3,16 @@ import LogoutBtn from "./logout-btn";
 
 export default function Header() {
   return (
-    <header className="flex items-center justify-between px-4 py-2 h-24">
-      <div className="flex items-center rounded-2xl">
-        <TicketIcon className="size-12 mr-1 text-red-950"/>
-        <span className="font-semibold text-xl">
-          Ingressos CRM
-        </span>
+    <header className="navbar bg-base-100 px-4 h-20 shadow-sm">
+      <div className="flex-1">
+        <div className="flex items-center">
+          <TicketIcon className="size-10 mr-2 text-primary" />
+          <span className="font-semibold text-xl">Ingressos CRM</span>
+        </div>
       </div>
-      <LogoutBtn />
+      <div className="flex-none">
+        <LogoutBtn />
+      </div>
     </header>
-  )
+  );
 }

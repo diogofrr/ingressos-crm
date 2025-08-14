@@ -1,4 +1,7 @@
+import forms from "@tailwindcss/forms";
 import type { Config } from "tailwindcss";
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const daisyui = require("daisyui");
 
 const config: Config = {
   content: [
@@ -9,15 +12,18 @@ const config: Config = {
   theme: {
     extend: {
       screens: {
-        'xs': '480px',
-        'sm': '640px',
-        'md': '768px',
-        'lg': '1024px',
-        'xl': '1280px',
-        '2xl': '1536px',
-      }
+        xs: "480px",
+        sm: "640px",
+        md: "768px",
+        lg: "1024px",
+        xl: "1280px",
+        "2xl": "1536px",
+      },
     },
   },
-  plugins: [],
+  plugins: [forms, daisyui],
+  daisyui: {
+    themes: ["light", "dark"],
+  },
 };
 export default config;

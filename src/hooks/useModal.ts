@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export default function useModal() {
   const [open, setOpen] = useState(false);
@@ -8,26 +8,37 @@ export default function useModal() {
     width: 0,
     height: 0,
   });
-  const element = document.getElementById("cards-content");
+  const [element, setElement] = useState<HTMLElement | null>(null);
+
+  useEffect(() => {
+    if (typeof document !== "undefined") {
+      setElement(document.getElementById("cards-content"));
+    }
+  }, []);
 
   const handleOpenModal = () => {
     if (element) {
       element.style.overflow = "hidden";
     }
 
-    setPosition({
-      height: window.scrollY,
-      width: window.screenX,
-    });
-    window.scrollTo(0, 0);
+    if (typeof window !== "undefined") {
+      setPosition({
+        height: window.scrollY,
+        width: window.screenX,
+      });
+      window.scrollTo(0, 0);
+    }
     setOpen(true);
   };
+
   const handleCloseModal = () => {
     if (element) {
       element.style.overflow = "auto";
     }
 
-    window.scrollTo(position.width, position.height);
+    if (typeof window !== "undefined") {
+      window.scrollTo(position.width, position.height);
+    }
     setOpen(false);
   };
 

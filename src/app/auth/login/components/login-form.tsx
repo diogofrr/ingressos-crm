@@ -44,10 +44,8 @@ export const LoginForm = () => {
       onSubmit={handleAuthUser}
     >
       {({ values, errors, touched, handleChange }) => (
-        <Form className="w-full px-8" noValidate>
-          <Alert type={type} visible={visible}>
-            {message}
-          </Alert>
+        <Form className="w-full px-8 space-y-1" noValidate>
+          {/* Alert removido. Usar toasts via useAlert() */}
           <Field
             label="Email"
             name="email"
@@ -68,7 +66,7 @@ export const LoginForm = () => {
             errorMessage={errors.password && touched.password ? errors.password : ""}
             onChange={handleChange}
           />
-          <Button className="mt-4" type="submit" disabled={loading}>
+          <Button className="mt-1" type="submit" disabled={loading}>
             {loading ? 'Carregando...' : 'Entrar'}
           </Button>
         </Form>

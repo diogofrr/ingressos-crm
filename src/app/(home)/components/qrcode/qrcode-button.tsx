@@ -1,8 +1,8 @@
 import Button from "@/app/components/button";
-import useModal from "@/hooks/useModal";
-import QRCodeModal from "./qrcode-modal";
 import { QRCodeIcon } from "@/assets/img/qrcode-icon";
+import useModal from "@/hooks/useModal";
 import { SHOW_MESSAGE_FN } from "@/types/global-message";
+import QRCodeModal from "./qrcode-modal";
 
 interface QRCodeButtonProps {
   handleGetTickets: () => void;
@@ -20,10 +20,12 @@ export default function QRCodeButton({
       <Button
         btnStyle="outline"
         onClick={handleOpenModal}
-        className="block sm:hidden"
+        className="w-full sm:hidden"
       >
-        <QRCodeIcon className="size-6 mr-2" />
-        Ler QRCode
+        <div className="flex items-center gap-2">
+          <QRCodeIcon className="size-5" />
+          <span>Ler QRCode</span>
+        </div>
       </Button>
       <QRCodeModal
         handleShowMessage={handleShowMessage}

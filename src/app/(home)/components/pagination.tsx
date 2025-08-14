@@ -16,19 +16,21 @@ export default function Pagination({
 }: PaginationProps) {
   return (
     <div className="flex items-center justify-between sm:justify-center gap-4 mx-4 sm:ml-auto sm:mr-4">
-      <p className="text-slate-950 text-sm">
+      <p className="text-base-content text-sm">
         <span className="font-semibold">Total de registros:</span> {totalRows}
       </p>
-      <div className="flex items-center justify-center gap-2">
+      <div className="join">
         <button
-          className="flex items-center justify-center hover:bg-slate-700 bg-slate-500 text-slate-100 rounded-lg px-4 py-2"
+          className="btn btn-sm join-item"
           onClick={handlePreviousPage}
+          aria-label="Página anterior"
         >
           <ArrowLeftIcon className="size-5" />
         </button>
         <button
-          className="flex items-center justify-center hover:bg-slate-700 bg-slate-500 text-slate-100 rounded-lg px-4 py-2"
+          className="btn btn-sm join-item"
           onClick={handleNextPage}
+          aria-label="Próxima página"
         >
           <ArrowRightIcon className="size-5" />
         </button>

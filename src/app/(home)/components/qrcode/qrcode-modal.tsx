@@ -1,12 +1,13 @@
 "use client";
 
-import { Scanner } from "@yudiel/react-qr-scanner";
-import QRCodeHeader from "./qrcode-header";
-import { validateTicket } from "@/services/tickets/validate-ticket";
-import useLoading from "@/hooks/useLoading";
-import Alert from "@/app/components/alert";
 import useAlert from "@/hooks/useAlert";
+import useLoading from "@/hooks/useLoading";
+import { validateTicket } from "@/services/tickets/validate-ticket";
 import { SHOW_MESSAGE_FN } from "@/types/global-message";
+import { Scanner } from "@yudiel/react-qr-scanner";
+import { useEffect } from "react";
+import Modal from "react-modal";
+import QRCodeHeader from "./qrcode-header";
 
 interface QRCodeModalProps {
   open: boolean;
@@ -19,10 +20,20 @@ export default function QRCodeModal({
   open,
   handleCloseModal,
   handleGetTickets,
-  handleShowMessage
+  handleShowMessage,
 }: QRCodeModalProps) {
   const { loading, handleStartLoading, handleStopLoading } = useLoading();
-  const { visible, type, message, handleHideMessage, handleShowMessage: handleShowLocalMessage } = useAlert()
+  const {
+    visible,
+    type,
+    message,
+    handleHideMessage,
+    handleShowMessage: handleShowLocalMessage,
+  } = useAlert();
+
+  useEffect(() => {
+    Modal.setAppElement(document.body);
+  }, []);
 
   const handleValidateQRCode = async (hash: string) => {
     handleStartLoading();
@@ -31,38 +42,49 @@ export default function QRCodeModal({
     await validateTicket(hash)
       .then((res) => {
         if (res.error) {
-          handleShowLocalMessage(res.msg, "danger")
-          return
+          handleShowLocalMessage(res.msg, "danger");
+          return;
         }
 
-        handleGetTickets()
+        handleGetTickets();
         handleCloseModal();
-        handleShowMessage(res.msg, "success")
+        handleShowMessage(res.msg, "success");
       })
       .catch((err) => {
-        console.error(err.message)
+        console.error(err.message);
       })
       .finally(() => {
         handleStopLoading();
       });
   };
 
-  if (!open) return;
-
   return (
-    <div className="absolute top-0 left-0 w-full min-h-[800px] h-full z-10 bg-slate-950/20 sm:p-6">
-      <div className="relative bg-white w-full sm:w-[600px] h-full sm:h-auto mx-auto top-2/4 -translate-y-2/4 rounded-lg px-6 py-10">
+    <Modal
+      isOpen={open}
+      onRequestClose={handleCloseModal}
+      className={{
+        base: "fixed inset-0 bg-base-100 sm:bg-transparent sm:flex sm:items-center sm:justify-center",
+        afterOpen: "",
+        beforeClose: "",
+      }}
+      overlayClassName={{
+        base: "fixed inset-0 z-50 bg-transparent sm:bg-black/50",
+        afterOpen: "",
+        beforeClose: "",
+      }}
+      shouldCloseOnOverlayClick={true}
+      shouldCloseOnEsc={true}
+    >
+      <div className="w-full h-full overflow-auto p-6 sm:bg-base-100 sm:rounded-xl sm:max-w-2xl sm:w-11/12 sm:h-auto sm:p-6 space-y-1">
         <QRCodeHeader handleCloseModal={handleCloseModal} />
         <p className="text-sm mt-2">
           Leia o QRCode do ingresso para validação automática do ingresso.
         </p>
-        <Alert type={type} visible={visible}>
-          {message}
-        </Alert>
+        {/* Alert removido. Usar toasts via useAlert() */}
         <Scanner
           styles={{
             container: {
-              marginTop: '24px'
+              marginTop: "16px",
             },
             video: {
               width: "100%",
@@ -71,7 +93,9 @@ export default function QRCodeModal({
               borderRadius: "0.5rem",
             },
           }}
-          onScan={async (detectedCodes) => await handleValidateQRCode(detectedCodes[0].rawValue)}
+          onScan={async (detectedCodes) =>
+            await handleValidateQRCode(detectedCodes[0].rawValue)
+          }
           paused={loading}
           allowMultiple={true}
           components={{
@@ -80,10 +104,10 @@ export default function QRCodeModal({
             torch: false,
             zoom: false,
             finder: true,
-        }}
+          }}
           formats={["qr_code", "rm_qr_code", "micro_qr_code"]}
         />
       </div>
-    </div>
+    </Modal>
   );
 }

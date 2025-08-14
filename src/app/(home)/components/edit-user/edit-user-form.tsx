@@ -147,15 +147,14 @@ export default function EditUserForm({
       onSubmit={handleSubmit}
     >
       {({ values, errors, handleChange }) => (
-        <Form className="mt-4 flex flex-col gap-1">
-          <Alert type={type} visible={visible}>
-            {message}
-          </Alert>
+        <Form className="mt-4 flex flex-col gap-1 space-y-1">
+          {/* Alert removido. Usar toasts via useAlert() */}
           {ticketInfo.status === "C" ? (
             <Button
               color="green"
               btnStyle="outline"
-              className="max-w-48 ml-auto"
+              className="w-auto max-w-48 ml-auto"
+              fullWidth={false}
               onClick={handleReactivateTicket}
             >
               Reativar Ingresso
@@ -164,7 +163,8 @@ export default function EditUserForm({
             <Button
               color={"red"}
               btnStyle="outline"
-              className="max-w-48 ml-auto"
+              className="w-auto max-w-48 ml-auto"
+              fullWidth={false}
               onClick={handleCancelTicket}
               disabled={isDisabled}
             >
@@ -188,7 +188,7 @@ export default function EditUserForm({
             disabled={isDisabled}
             readOnly={isDisabled}
           />
-          <div className="flex md:flex-row flex-col md:gap-4">
+          <div className="flex md:flex-row flex-col md:gap-1">
             <Field
               label="CPF"
               name="cpf"
@@ -254,7 +254,7 @@ export default function EditUserForm({
             onChange={handleFieldDisabled}
             value={ticketInfo.seller.full_name}
           />
-          <div className="flex md:flex-row flex-col md:gap-4">
+          <div className="flex md:flex-row flex-col md:gap-1">
             <Field
               label="Status"
               name="status"
@@ -286,7 +286,7 @@ export default function EditUserForm({
               Boolean(handleDeepEqual(values, initialValues))
             }
             type="submit"
-            className="mt-6"
+            className="mt-1"
             loading={loading}
           >
             Salvar

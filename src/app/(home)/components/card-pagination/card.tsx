@@ -70,51 +70,89 @@ export default function Card({
         ticketInfo={ticket}
         handleShowMessage={handleShowMessage}
       />
-      <div className="w-full py-4 px-4 flex justify-between items-center border-2 rounded-lg bg-slate-50">
-        <div
-          className="flex flex-col gap-2 w-full"
-          onClick={handleCloseOptions}
-        >
-          <div className="flex items-center gap-2">
-            <p className="font-semibold">{ticket.full_name}</p>
-            <StatusCircle hideLabel status={ticket.status} />
-          </div>
-          <p>{ticket.cpf}</p>
-        </div>
-        <div
-          className={`border-2 rounded-full p-1 relative ${
-            activeOptions && selectedCard === ticket.id
-              ? "border-black"
-              : "border-transparent"
-          }`}
-          onTouchStart={() => handleOpenOptions(ticket.id)}
-        >
-          <EllipsisIcon className="size-5" />
-          <ul
-            className={`${
-              activeOptions && selectedCard === ticket.id ? "block" : "hidden"
-            } absolute shadow-lg bg-white p-2 w-52 -right-full top-8 z-10`}
-          >
-            <li>
-              <button
-                className="p-2 hover:bg-slate-50"
-                onTouchEnd={handleDownloadTicket}
-              >
-                Baixar ingresso
-              </button>
-            </li>
-            <li>
-              <button
-                className="p-2"
-                onTouchEnd={() => {
-                  handleCloseOptions();
-                  handleOpenModal();
+      <div className="card bg-base-100 shadow-sm">
+        <div className="card-body py-4 px-4">
+          <div className="flex items-start justify-between gap-2">
+            <div
+              className="flex flex-col gap-1 w-full"
+              onClick={handleCloseOptions}
+            >
+              <div className="flex items-center gap-2">
+                <StatusCircle hideLabel status={ticket.status} />
+                <p className="font-semibold">{ticket.full_name}</p>
+              </div>
+              <p className="text-sm opacity-70">{ticket.cpf}</p>
+            </div>
+            <div
+              className={`dropdown dropdown-end ${
+                activeOptions && selectedCard === String(ticket.id)
+                  ? "dropdown-open"
+                  : ""
+              }`}
+            >
+              <div
+                tabIndex={0}
+                role="button"
+                className={`btn btn-ghost btn-sm rounded-full ${
+                  activeOptions && selectedCard === String(ticket.id)
+                    ? "btn-active"
+                    : ""
+                }`}
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  handleOpenOptions(String(ticket.id));
                 }}
               >
-                Editar ingresso
-              </button>
-            </li>
-          </ul>
+                <EllipsisIcon className="size-4" />
+              </div>
+              <ul
+                tabIndex={0}
+                className="dropdown-content menu menu-sm bg-base-100 rounded-box z-[1] w-52 p-2 shadow"
+              >
+                <li>
+                  <button
+                    className="justify-between"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      handleDownloadTicket();
+                      handleCloseOptions();
+                      // força o fechamento visual do dropdown
+                      (
+                        e.currentTarget.closest(
+                          ".dropdown"
+                        ) as HTMLElement | null
+                      )
+                        ?.querySelector('[role="button"]')
+                        ?.dispatchEvent(new Event("blur"));
+                    }}
+                  >
+                    Baixar ingresso
+                  </button>
+                </li>
+                <li>
+                  <button
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      handleCloseOptions();
+                      handleOpenModal();
+                      (
+                        e.currentTarget.closest(
+                          ".dropdown"
+                        ) as HTMLElement | null
+                      )
+                        ?.querySelector('[role="button"]')
+                        ?.dispatchEvent(new Event("blur"));
+                    }}
+                  >
+                    Editar ingresso
+                  </button>
+                </li>
+              </ul>
+            </div>
+          </div>
         </div>
       </div>
     </>
