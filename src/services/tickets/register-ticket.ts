@@ -9,6 +9,7 @@ interface RegisterTicketArgs {
   telephone: string;
   birth_date: string;
   cpf: string;
+  batch: number;
 }
 
 export async function registerTicket(

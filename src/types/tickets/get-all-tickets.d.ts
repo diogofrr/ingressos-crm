@@ -14,6 +14,7 @@ export interface GetAllTicketsData {
   cpf: string;
   qrcode: string;
   status: TICKET_STATUS;
+  batch: number;
   created_at: string;
   update_at: string | null;
   update_by: string | null;

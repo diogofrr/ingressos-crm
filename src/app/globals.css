@@ -1,3 +1,31 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Melhorias para mobile */
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+}
+
+@layer components {
+  /* Melhorar a experiência de toque em dispositivos móveis */
+  .btn,
+  .input,
+  .link {
+    @apply touch-manipulation;
+  }
+
+  /* Prevenir zoom em inputs no iOS */
+  input[type="email"],
+  input[type="password"],
+  input[type="text"] {
+    @apply text-base;
+  }
+}

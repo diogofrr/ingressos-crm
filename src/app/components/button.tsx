@@ -1,4 +1,4 @@
-type COLORS_OPTIONS = "gray" | "green" | "red" | "blue";
+type COLORS_OPTIONS = "gray" | "green" | "red" | "blue" | "secondary";
 
 interface ButtonProps extends React.ComponentPropsWithoutRef<"button"> {
   className?: string;
@@ -24,11 +24,12 @@ export default function Button({
     green: "btn-success",
     blue: "btn-primary",
     red: "btn-error",
+    secondary: "btn-ghost",
   };
 
   const baseClasses = `btn ${
     fullWidth ? "w-full" : "w-auto"
-  } h-12 min-h-12 font-semibold`;
+  } h-14 min-h-14 font-semibold text-base`;
   const styleClasses =
     btnStyle === "outline"
       ? `btn-outline ${colorClassByScheme[color]}`

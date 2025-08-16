@@ -103,6 +103,9 @@ export default function TicketTable({
             Telefone
           </th>
           <th scope="col" className="px-6 py-3">
+            Lote
+          </th>
+          <th scope="col" className="px-6 py-3">
             Status
           </th>
           <th scope="col" className="px-6 py-3">
@@ -120,7 +123,7 @@ export default function TicketTable({
     return (
       <tbody>
         {tickets.map((data) => {
-          const { id, full_name, cpf, telephone, status, seller } = data;
+          const { id, full_name, cpf, telephone, status, seller, batch } = data;
           return (
             <tr
               className="bg-base-100"
@@ -134,34 +137,35 @@ export default function TicketTable({
               </th>
               <td className="px-6 py-4 min-w-44">{cpf}</td>
               <td className="px-6 py-4 min-w-44">{telephone}</td>
+              <td className="px-6 py-4 min-w-24">{batch}ª Lote</td>
               <td className="px-6 py-4 min-w-24">
                 <StatusCircle status={status} />
               </td>
               <td className="px-6 py-4 min-w-40">{seller.full_name}</td>
-              <td className="px-6 py-4 text-center min-w-44">
+              <td className="px-6 py-4 text-center min-w-40 sm:min-w-44">
                 <div className="hidden sm:flex justify-end gap-4">
                   <button
-                    className="hover:bg-base-200 p-1 rounded-full"
+                    className="hover:bg-purple-100 p-2 rounded-full transition-colors duration-200"
                     onClick={() => {
                       setSelectedItem(data);
                       handleOpenEditModal();
                     }}
                     disabled={verifying || downloading}
                   >
-                    <EditIcon className="size-6 cursor-pointer" />
+                    <EditIcon className="size-6 cursor-pointer text-purple-600" />
                   </button>
                   {downloading && selectedItem.id === id ? (
                     <Spinner className="size-6 text-blue-500" />
                   ) : (
                     <button
-                      className="hover:bg-primary/20 p-1 rounded-full text-primary"
+                      className="hover:bg-blue-100 p-2 rounded-full transition-colors duration-200"
                       onClick={() => {
                         setSelectedItem(data);
                         handleDownloadTicket(id);
                       }}
                       disabled={verifying || downloading}
                     >
-                      <DownloadIcon className="size-6 cursor-pointer" />
+                      <DownloadIcon className="size-6 cursor-pointer text-blue-600" />
                     </button>
                   )}
                   {verifying && selectedItem.id === id ? (
@@ -170,9 +174,9 @@ export default function TicketTable({
                     <button
                       className={`${
                         status !== "A"
-                          ? "text-base-content/40 cursor-auto"
-                          : "hover:bg-success/20 text-success"
-                      } p-1 rounded-full`}
+                          ? "text-gray-400 cursor-auto"
+                          : "hover:bg-emerald-100 text-emerald-600"
+                      } p-2 rounded-full transition-colors duration-200`}
                       onClick={() => {
                         setSelectedItem(data);
                         handleOpenVerificationModal();

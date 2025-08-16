@@ -10,6 +10,7 @@ interface UpdateTicketArgs {
   telephone: string;
   birth_date: string;
   cpf: string;
+  batch: number;
 }
 
 export async function updateTicket(

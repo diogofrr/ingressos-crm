@@ -75,7 +75,7 @@ export default function AddUserModal({
           <Button
             type="button"
             btnStyle="outline"
-            color="gray"
+            color="secondary"
             onClick={handleCloseModal}
             disabled={loading}
             fullWidth={false}

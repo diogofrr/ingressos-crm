@@ -1,6 +1,7 @@
 "use client";
 
 import Field from "@/app/components/field";
+import Select from "@/app/components/select";
 import useAlert from "@/hooks/useAlert";
 import useLoading from "@/hooks/useLoading";
 import { registerTicket } from "@/services/tickets/register-ticket";
@@ -36,6 +37,7 @@ export default function AddUserForm({
     cpf: "",
     birthday: "",
     tel: "",
+    batch: "1",
   };
 
   const vaidationSchema = Yup.object().shape({
@@ -48,6 +50,7 @@ export default function AddUserForm({
     tel: Yup.string()
       .required("Telefone é obrigatório")
       .length(15, "Telefone inválido"),
+    batch: Yup.string().required("Lote é obrigatório"),
   });
 
   const handleSubmit = async (values: typeof initialValues) => {
@@ -61,6 +64,7 @@ export default function AddUserForm({
       birth_date: new Date(values.birthday).toLocaleDateString("pt-BR", {
         timeZone: "UTC",
       }),
+      batch: Number(values.batch),
     };
 
     await registerTicket(formattedObject)
@@ -169,6 +173,22 @@ export default function AddUserForm({
                 handleChange(e);
               }}
               value={values.tel}
+            />
+            <Select
+              label="Lote"
+              name="batch"
+              error={Boolean(errors.batch)}
+              errorMessage={errors.batch ?? ""}
+              options={[
+                { key: "1ª Lote", value: 1 },
+                { key: "2ª Lote", value: 2 },
+                { key: "3ª Lote", value: 3 },
+                { key: "4ª Lote", value: 4 },
+                { key: "5ª Lote", value: 5 },
+              ]}
+              onChange={handleChange}
+              value={values.batch}
+              required
             />
           </Form>
         );

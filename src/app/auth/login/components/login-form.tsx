@@ -1,6 +1,5 @@
 "use client";
 
-import Alert from "@/app/components/alert";
 import Button from "@/app/components/button";
 import Field from "@/app/components/field";
 import useAlert from "@/hooks/useAlert";
@@ -10,32 +9,35 @@ import { Form, Formik } from "formik";
 import * as Yup from "yup";
 
 export const LoginForm = () => {
-  const { loading, handleStartLoading, handleStopLoading } = useLoading()
-  const { visible, type, message, handleHideMessage, handleShowMessage } = useAlert()
+  const { loading, handleStartLoading, handleStopLoading } = useLoading();
+  const { visible, type, message, handleHideMessage, handleShowMessage } =
+    useAlert();
 
-  const initialValues = { email: "", password: "" }
+  const initialValues = { email: "", password: "" };
 
   const validation = Yup.object().shape({
-    email: Yup.string().required("Campo obrigatório").email("Digite um email válido"),
+    email: Yup.string()
+      .required("Campo obrigatório")
+      .email("Digite um email válido"),
     password: Yup.string().required("Campo obrigatório"),
-  })
+  });
 
   const handleAuthUser = async (values: typeof initialValues) => {
-    handleStartLoading()
+    handleStartLoading();
 
     await login(values)
-    .then(res => {
-      if (res.error) {
-        handleShowMessage(res.msg, 'danger')
-        return
-      }
-      handleShowMessage(res.msg, 'success')
-    })
-    .catch(err => {
-      console.log(err.message)
-    })
-    .finally(() => handleStopLoading())
-  }
+      .then((res) => {
+        if (res.error) {
+          handleShowMessage(res.msg, "danger");
+          return;
+        }
+        handleShowMessage(res.msg, "success");
+      })
+      .catch((err) => {
+        console.log(err.message);
+      })
+      .finally(() => handleStopLoading());
+  };
 
   return (
     <Formik
@@ -44,7 +46,7 @@ export const LoginForm = () => {
       onSubmit={handleAuthUser}
     >
       {({ values, errors, touched, handleChange }) => (
-        <Form className="w-full px-8 space-y-1" noValidate>
+        <Form className="w-full px-4 sm:px-8 space-y-6" noValidate>
           {/* Alert removido. Usar toasts via useAlert() */}
           <Field
             label="Email"
@@ -62,12 +64,16 @@ export const LoginForm = () => {
             type="password"
             value={values.password}
             placeholder="Insira sua senha aqui"
-            error={Boolean(errors.password && touched.password && errors.password)}
-            errorMessage={errors.password && touched.password ? errors.password : ""}
+            error={Boolean(
+              errors.password && touched.password && errors.password
+            )}
+            errorMessage={
+              errors.password && touched.password ? errors.password : ""
+            }
             onChange={handleChange}
           />
-          <Button className="mt-1" type="submit" disabled={loading}>
-            {loading ? 'Carregando...' : 'Entrar'}
+          <Button className="mt-8" type="submit" disabled={loading}>
+            {loading ? "Carregando..." : "Entrar"}
           </Button>
         </Form>
       )}

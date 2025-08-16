@@ -60,26 +60,26 @@ export default function EditUserModal({
       isOpen={open}
       onRequestClose={handleCloseModal}
       className={{
-        base: "fixed inset-0 bg-base-100 sm:bg-transparent sm:flex sm:items-center sm:justify-center",
+        base: "fixed inset-0 bg-base-100 xs:bg-transparent xs:flex xs:items-center xs:justify-center p-0 xs:p-2 sm:p-4",
         afterOpen: "",
         beforeClose: "",
       }}
       overlayClassName={{
-        base: "fixed inset-0 z-50 bg-transparent sm:bg-black/50",
+        base: "fixed inset-0 z-50 bg-transparent xs:bg-black/50",
         afterOpen: "",
         beforeClose: "",
       }}
       shouldCloseOnOverlayClick={true}
       shouldCloseOnEsc={true}
     >
-      <div className="w-full h-full overflow-auto sm:bg-base-100 sm:rounded-xl sm:max-w-2xl sm:w-11/12 sm:h-auto flex flex-col">
+      <div className="w-full h-full xs:bg-base-100 xs:rounded-xl xs:max-w-2xl xs:w-11/12 xs:max-h-[95vh] xs:h-auto sm:max-h-[90vh] flex flex-col">
         {/* Cabeçalho */}
-        <div className="p-6 pb-4 border-b border-base-200">
+        <div className="p-3 xs:p-4 sm:p-6 pb-2 xs:pb-3 sm:pb-4 border-b border-base-200 flex-shrink-0">
           <EditUserHeader handleCloseModal={handleCloseModal} />
         </div>
 
         {/* Conteúdo/Formulário */}
-        <div className="p-6 py-8 flex-1 overflow-auto">
+        <div className="p-3 xs:p-4 sm:p-6 py-4 xs:py-6 sm:py-8 flex-1 min-h-0 overflow-y-auto">
           <EditUserForm
             handleShowMessage={handleShowMessage}
             handleCloseModal={handleCloseModal}
@@ -92,16 +92,16 @@ export default function EditUserModal({
         </div>
 
         {/* Rodapé */}
-        <div className="p-6 pt-4 border-t border-base-200 flex justify-between">
-          <div>
+        <div className="p-3 xs:p-4 sm:p-6 pt-2 xs:pt-3 sm:pt-4 border-t border-base-200 flex flex-col xs:flex-row xs:justify-between gap-2 xs:gap-3 sm:gap-0 flex-shrink-0 bg-base-100">
+          <div className="flex justify-center xs:justify-start">
             {ticketInfo.status === "C" ? (
               <Button
                 color="green"
                 btnStyle="outline"
                 onClick={handleCancelAction}
                 disabled={loading}
-                fullWidth={false}
-                className="w-auto min-w-[160px]"
+                fullWidth={true}
+                className="w-full xs:w-auto xs:min-w-[160px]"
               >
                 Reativar Ingresso
               </Button>
@@ -111,23 +111,23 @@ export default function EditUserModal({
                 btnStyle="outline"
                 onClick={handleCancelAction}
                 disabled={isDisabled || loading}
-                fullWidth={false}
-                className="w-auto min-w-[160px]"
+                fullWidth={true}
+                className="w-full xs:w-auto xs:min-w-[160px]"
               >
                 Cancelar Ingresso
               </Button>
             )}
           </div>
 
-          <div className="flex gap-3">
+          <div className="flex gap-2 sm:gap-3">
             <Button
               type="button"
               btnStyle="outline"
-              color="gray"
+              color="secondary"
               onClick={handleCloseModal}
               disabled={loading}
-              fullWidth={false}
-              className="w-auto min-w-[100px]"
+              fullWidth={true}
+              className="flex-1 xs:flex-none xs:w-auto xs:min-w-[100px]"
             >
               Fechar
             </Button>
@@ -136,8 +136,8 @@ export default function EditUserModal({
               onClick={handleSubmitForm}
               loading={loading}
               disabled={!canSave}
-              fullWidth={false}
-              className="w-auto min-w-[100px]"
+              fullWidth={true}
+              className="flex-1 xs:flex-none xs:w-auto xs:min-w-[100px]"
             >
               Salvar
             </Button>

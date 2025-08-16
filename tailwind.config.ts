@@ -23,7 +23,7 @@ const config: Config = {
   },
   plugins: [forms, daisyui],
   daisyui: {
-    themes: ["light", "dark"],
+    themes: ["light"],
   },
 };
 export default config;

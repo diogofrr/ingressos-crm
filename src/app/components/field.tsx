@@ -31,7 +31,7 @@ export default function Field({
   return (
     <div className="form-control w-full">
       {!hideLabel && (
-        <label htmlFor={name || inputId} className="label">
+        <label htmlFor={name || inputId} className="label pb-2">
           <span className="label-text text-base font-medium">{label}</span>
         </label>
       )}
@@ -41,7 +41,7 @@ export default function Field({
           name={name}
           id={name || inputId}
           onChange={onChange}
-          className={`input input-bordered w-full h-12 ${
+          className={`input input-bordered w-full h-14 text-base ${
             type === "password" ? "pr-12" : ""
           } ${error ? "input-error" : ""} ${className}`}
           aria-invalid={error}

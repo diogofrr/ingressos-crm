@@ -70,7 +70,7 @@ export default function Card({
         ticketInfo={ticket}
         handleShowMessage={handleShowMessage}
       />
-      <div className="card bg-base-100 shadow-sm">
+      <div className="card bg-base-100 shadow-sm rounded-none">
         <div className="card-body py-4 px-4">
           <div className="flex items-start justify-between gap-2">
             <div

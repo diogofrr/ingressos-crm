@@ -105,7 +105,7 @@ export default function Home() {
           handlePreviousPage={handlePreviousPage}
           totalRows={totalRows}
         />
-        <div className="w-full px-4">
+        <div className="w-full">
           <TicketTable
             handleShowMessage={handleShowMessage}
             handleGetTickets={handleGetTickets}
@@ -120,11 +120,11 @@ export default function Home() {
 
   return (
     <section
-      className="flex flex-col h-auto sm:h-dvh bg-base-200 relative min-h-[800px]"
+      className="flex flex-col h-auto bg-base-200 relative min-h-[800px]"
       id="main-content"
     >
       <Header />
-      <section className="sm:min-h-[800px] h-full bg-base-100 sm:shadow-lg flex flex-col scroll-smooth">
+      <section className="sm:min-h-[800px] h-full bg-base-100 flex flex-col scroll-smooth">
         <div className="flex items-center justify-between p-4 flex-col sm:flex-row gap-4">
           <AddUserButton
             handleShowMessage={handleShowMessage}

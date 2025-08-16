@@ -37,46 +37,49 @@ export default function ModalConfirmation({
       isOpen={open}
       onRequestClose={handleCloseModal}
       className={{
-        base: "flex items-center justify-center p-4",
+        base: "fixed inset-0 bg-base-100 xs:bg-transparent xs:flex xs:items-center xs:justify-center p-3 xs:p-4",
         afterOpen: "",
         beforeClose: "",
       }}
       overlayClassName={{
-        base: "fixed inset-0 z-50 bg-black/50",
+        base: "fixed inset-0 z-50 bg-transparent xs:bg-black/50",
         afterOpen: "",
         beforeClose: "",
       }}
       shouldCloseOnOverlayClick={true}
       shouldCloseOnEsc={true}
     >
-      <div className="bg-base-100 rounded-xl p-6 max-w-md w-full h-auto space-y-1">
-        <div className="flex flex-col items-center justify-center text-center gap-2">
-          <AlertIcon className="size-16 text-warning" />
-          <h3 className="text-lg font-semibold">Atenção</h3>
-          <p>{message}</p>
+      <div className="w-full h-full xs:bg-base-100 xs:rounded-xl xs:max-w-md xs:w-11/12 xs:h-auto flex flex-col justify-center">
+        <div className="flex flex-col items-center justify-center text-center gap-4 xs:gap-6 p-4 xs:p-6">
+          <AlertIcon className="size-12 xs:size-16 text-warning" />
+          <div className="space-y-2 xs:space-y-3">
+            <h3 className="text-base xs:text-lg font-semibold">Atenção</h3>
+            <p className="text-sm xs:text-base leading-relaxed">{message}</p>
+          </div>
         </div>
-        <div className="modal-action gap-1">
+        <div className="flex flex-col xs:flex-row gap-3 xs:gap-4 p-4 xs:p-6 pt-0 xs:pt-6">
+          <Button
+            type="button"
+            btnStyle="outline"
+            color="secondary"
+            onClick={handleCloseModal}
+            disabled={loading}
+            fullWidth={true}
+            className="order-2 flex-auto xs:order-1 h-12 min-h-12 xs:h-14 xs:min-h-14 text-sm xs:text-base"
+          >
+            Cancelar
+          </Button>
           <Button
             type="button"
             btnStyle="solid"
             color="blue"
             onClick={handleConfirm}
             disabled={loading}
-            className="px-4 text-sm"
-            fullWidth={false}
+            loading={loading}
+            fullWidth={true}
+            className="order-1 flex-auto xs:order-2 h-12 min-h-12 xs:h-14 xs:min-h-14 text-sm xs:text-base"
           >
             {loading ? "Carregando..." : "Confirmar"}
-          </Button>
-          <Button
-            type="button"
-            btnStyle="outline"
-            color="red"
-            onClick={handleCloseModal}
-            disabled={loading}
-            className="px-4 text-sm"
-            fullWidth={false}
-          >
-            Cancelar
           </Button>
         </div>
       </div>
