@@ -42,8 +42,8 @@ export default function Field({
           id={name || inputId}
           onChange={onChange}
           className={`input input-bordered w-full h-12 ${
-            error ? "input-error" : ""
-          } ${className}`}
+            type === "password" ? "pr-12" : ""
+          } ${error ? "input-error" : ""} ${className}`}
           aria-invalid={error}
           aria-errormessage={error ? `${name || inputId}-error` : undefined}
           {...args}
@@ -51,9 +51,10 @@ export default function Field({
         {type === "password" && (
           <button
             type="button"
-            className="absolute inset-y-0 right-2 flex items-center text-base-content/60 hover:text-base-content"
+            className="absolute inset-y-0 right-2 flex items-center text-base-content/60 hover:text-base-content z-10 bg-transparent border-none outline-none focus:outline-none pointer-events-auto cursor-pointer"
             onClick={() => setShowPassword((prevState) => !prevState)}
             aria-label={showPassword ? "Ocultar senha" : "Mostrar senha"}
+            tabIndex={-1}
           >
             {showPassword ? (
               <EyeSlashIcon className="size-6" />
