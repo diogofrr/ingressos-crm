@@ -1,5 +1,6 @@
 "use client";
 
+import Button from "@/app/components/button";
 import useAlert from "@/hooks/useAlert";
 import useLoading from "@/hooks/useLoading";
 import { validateTicket } from "@/services/tickets/validate-ticket";
@@ -23,13 +24,8 @@ export default function QRCodeModal({
   handleShowMessage,
 }: QRCodeModalProps) {
   const { loading, handleStartLoading, handleStopLoading } = useLoading();
-  const {
-    visible,
-    type,
-    message,
-    handleHideMessage,
-    handleShowMessage: handleShowLocalMessage,
-  } = useAlert();
+  const { handleHideMessage, handleShowMessage: handleShowLocalMessage } =
+    useAlert();
 
   useEffect(() => {
     Modal.setAppElement(document.body);
@@ -75,38 +71,56 @@ export default function QRCodeModal({
       shouldCloseOnOverlayClick={true}
       shouldCloseOnEsc={true}
     >
-      <div className="w-full h-full overflow-auto p-6 sm:bg-base-100 sm:rounded-xl sm:max-w-2xl sm:w-11/12 sm:h-auto sm:p-6 space-y-1">
-        <QRCodeHeader handleCloseModal={handleCloseModal} />
-        <p className="text-sm mt-2">
-          Leia o QRCode do ingresso para validação automática do ingresso.
-        </p>
-        {/* Alert removido. Usar toasts via useAlert() */}
-        <Scanner
-          styles={{
-            container: {
-              marginTop: "16px",
-            },
-            video: {
-              width: "100%",
-              height: "auto",
-              objectFit: "cover",
-              borderRadius: "0.5rem",
-            },
-          }}
-          onScan={async (detectedCodes) =>
-            await handleValidateQRCode(detectedCodes[0].rawValue)
-          }
-          paused={loading}
-          allowMultiple={true}
-          components={{
-            audio: false,
-            onOff: false,
-            torch: false,
-            zoom: false,
-            finder: true,
-          }}
-          formats={["qr_code", "rm_qr_code", "micro_qr_code"]}
-        />
+      <div className="w-full h-full overflow-auto sm:bg-base-100 sm:rounded-xl sm:max-w-2xl sm:w-11/12 sm:h-auto flex flex-col">
+        <div className="p-6 pb-4 border-b border-base-200">
+          <QRCodeHeader handleCloseModal={handleCloseModal} />
+        </div>
+
+        <div className="p-6 py-8 flex-1 overflow-auto">
+          <p className="text-sm mb-6 text-gray-600">
+            Leia o QRCode do ingresso para validação automática do ingresso.
+          </p>
+          <Scanner
+            styles={{
+              container: {
+                marginTop: "0",
+              },
+              video: {
+                width: "100%",
+                height: "auto",
+                objectFit: "cover",
+                borderRadius: "0.5rem",
+              },
+            }}
+            onScan={async (detectedCodes) =>
+              await handleValidateQRCode(detectedCodes[0].rawValue)
+            }
+            paused={loading}
+            allowMultiple={true}
+            components={{
+              audio: false,
+              onOff: false,
+              torch: false,
+              zoom: false,
+              finder: true,
+            }}
+            formats={["qr_code", "rm_qr_code", "micro_qr_code"]}
+          />
+        </div>
+
+        <div className="p-6 pt-4 border-t border-base-200 flex justify-end">
+          <Button
+            type="button"
+            btnStyle="outline"
+            color="gray"
+            onClick={handleCloseModal}
+            disabled={loading}
+            fullWidth={false}
+            className="w-auto min-w-[100px]"
+          >
+            Fechar
+          </Button>
+        </div>
       </div>
     </Modal>
   );

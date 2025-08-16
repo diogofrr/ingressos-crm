@@ -1,7 +1,5 @@
 "use client";
 
-import Alert from "@/app/components/alert";
-import Button from "@/app/components/button";
 import Field from "@/app/components/field";
 import useAlert from "@/hooks/useAlert";
 import useLoading from "@/hooks/useLoading";
@@ -18,21 +16,20 @@ interface AddUserFormProps {
   handleCloseModal: () => void;
   handleGetTickets: () => void;
   handleShowMessage: SHOW_MESSAGE_FN;
+  onSubmitForm?: (submitFn: () => void) => void;
+  onFormValidation?: (isValid: boolean) => void;
 }
 
 export default function AddUserForm({
   handleCloseModal,
   handleGetTickets,
   handleShowMessage,
+  onSubmitForm,
+  onFormValidation,
 }: AddUserFormProps) {
-  const { loading, handleStartLoading, handleStopLoading } = useLoading();
-  const {
-    message,
-    type,
-    visible,
-    handleShowMessage: handleShowLocalMessage,
-    handleHideMessage,
-  } = useAlert();
+  const { handleStartLoading, handleStopLoading } = useLoading();
+  const { handleShowMessage: handleShowLocalMessage, handleHideMessage } =
+    useAlert();
 
   const initialValues = {
     name: "",
@@ -100,76 +97,82 @@ export default function AddUserForm({
       initialValues={initialValues}
       onSubmit={handleSubmit}
     >
-      {({ values, errors, handleChange }) => (
-        <Form className="mt-4 flex flex-col gap-1 space-y-1">
-          {/* Alert removido. Usar toasts via useAlert() */}
-          <Field
-            label="Nome"
-            name="name"
-            error={Boolean(errors.name)}
-            type={"text"}
-            errorMessage={errors.name ?? ""}
-            placeholder={"Insira o nome do comprador"}
-            onChange={(e) => {
-              const replacedValue = e.target.value.replace(/\d/g, "");
-              e.target.value = replacedValue;
-              handleChange(e);
-            }}
-            value={values.name}
-          />
-          <div className="flex md:flex-row flex-col md:gap-1">
+      {({ values, errors, handleChange, submitForm, isValid, dirty }) => {
+        if (onSubmitForm) {
+          onSubmitForm(submitForm);
+        }
+
+        if (onFormValidation) {
+          onFormValidation(isValid && dirty);
+        }
+
+        return (
+          <Form className="flex flex-col space-y-6">
             <Field
-              label="CPF"
-              name="cpf"
-              error={Boolean(errors.cpf)}
+              label="Nome"
+              name="name"
+              error={Boolean(errors.name)}
               type={"text"}
-              errorMessage={errors.cpf ?? ""}
-              placeholder={"Insira o CPF do comprador"}
-              maxLength={14}
+              errorMessage={errors.name ?? ""}
+              placeholder={"Insira o nome do comprador"}
+              onChange={(e) => {
+                const replacedValue = e.target.value.replace(/\d/g, "");
+                e.target.value = replacedValue;
+                handleChange(e);
+              }}
+              value={values.name}
+            />
+            <div className="flex md:flex-row flex-col md:gap-4 gap-6">
+              <Field
+                label="CPF"
+                name="cpf"
+                error={Boolean(errors.cpf)}
+                type={"text"}
+                errorMessage={errors.cpf ?? ""}
+                placeholder={"Insira o CPF do comprador"}
+                maxLength={14}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  const updatedValue = handleFormatCPF(value);
+
+                  e.target.value = updatedValue;
+
+                  handleChange(e);
+                }}
+                value={values.cpf}
+              />
+              <Field
+                label="Data de nascimento"
+                name="birthday"
+                error={Boolean(errors.birthday)}
+                type={"date"}
+                errorMessage={errors.birthday ?? ""}
+                placeholder={"Insira a data de nascimento do comprador"}
+                onChange={handleChange}
+                value={values.birthday}
+              />
+            </div>
+            <Field
+              label="Telefone"
+              name="tel"
+              error={Boolean(errors.tel)}
+              type={"text"}
+              errorMessage={errors.tel ?? ""}
+              placeholder={"Insira o telefone do comprador"}
+              maxLength={15}
               onChange={(e) => {
                 const value = e.target.value;
-                const updatedValue = handleFormatCPF(value);
+                const updatedValue = handleFormatTel(value);
 
                 e.target.value = updatedValue;
 
                 handleChange(e);
               }}
-              value={values.cpf}
+              value={values.tel}
             />
-            <Field
-              label="Data de nascimento"
-              name="birthday"
-              error={Boolean(errors.birthday)}
-              type={"date"}
-              errorMessage={errors.birthday ?? ""}
-              placeholder={"Insira a data de nascimento do comprador"}
-              onChange={handleChange}
-              value={values.birthday}
-            />
-          </div>
-          <Field
-            label="Telefone"
-            name="tel"
-            error={Boolean(errors.tel)}
-            type={"text"}
-            errorMessage={errors.tel ?? ""}
-            placeholder={"Insira o telefone do comprador"}
-            maxLength={15}
-            onChange={(e) => {
-              const value = e.target.value;
-              const updatedValue = handleFormatTel(value);
-
-              e.target.value = updatedValue;
-
-              handleChange(e);
-            }}
-            value={values.tel}
-          />
-          <Button type="submit" className="mt-1" loading={loading}>
-            Cadastrar
-          </Button>
-        </Form>
-      )}
+          </Form>
+        );
+      }}
     </Formik>
   );
 }

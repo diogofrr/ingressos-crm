@@ -1,7 +1,5 @@
 "use client";
 
-import Alert from "@/app/components/alert";
-import Button from "@/app/components/button";
 import Field from "@/app/components/field";
 import { statusLabel } from "@/app/components/status-circle";
 import useAlert from "@/hooks/useAlert";
@@ -22,6 +20,9 @@ interface EditUserFormProps {
   handleCloseModal: () => void;
   handleGetTickets: () => void;
   handleShowMessage: SHOW_MESSAGE_FN;
+  onSubmitForm?: (submitFn: () => void) => void;
+  onCancelAction?: (cancelFn: () => void) => void;
+  onFormValidation?: (isValid: boolean) => void;
 }
 
 export default function EditUserForm({
@@ -29,15 +30,13 @@ export default function EditUserForm({
   handleCloseModal,
   handleGetTickets,
   handleShowMessage,
+  onSubmitForm,
+  onCancelAction,
+  onFormValidation,
 }: EditUserFormProps) {
-  const { loading, handleStartLoading, handleStopLoading } = useLoading();
-  const {
-    message,
-    type,
-    visible,
-    handleShowMessage: handleShowLocalMessage,
-    handleHideMessage,
-  } = useAlert();
+  const { handleStartLoading, handleStopLoading } = useLoading();
+  const { handleShowMessage: handleShowLocalMessage, handleHideMessage } =
+    useAlert();
 
   const formattedDate = () => {
     const [day, month, year] = ticketInfo.birth_date
@@ -106,6 +105,14 @@ export default function EditUserForm({
       });
   };
 
+  const createCancelAction = () => {
+    if (ticketInfo.status === "C") {
+      return handleReactivateTicket;
+    } else {
+      return handleCancelTicket;
+    }
+  };
+
   const handleSubmit = async (values: typeof initialValues) => {
     handleStartLoading();
     handleHideMessage();
@@ -146,153 +153,136 @@ export default function EditUserForm({
       initialValues={initialValues}
       onSubmit={handleSubmit}
     >
-      {({ values, errors, handleChange }) => (
-        <Form className="mt-4 flex flex-col gap-1 space-y-1">
-          {/* Alert removido. Usar toasts via useAlert() */}
-          {ticketInfo.status === "C" ? (
-            <Button
-              color="green"
-              btnStyle="outline"
-              className="w-auto max-w-48 ml-auto"
-              fullWidth={false}
-              onClick={handleReactivateTicket}
-            >
-              Reativar Ingresso
-            </Button>
-          ) : (
-            <Button
-              color={"red"}
-              btnStyle="outline"
-              className="w-auto max-w-48 ml-auto"
-              fullWidth={false}
-              onClick={handleCancelTicket}
-              disabled={isDisabled}
-            >
-              Cancelar Ingresso
-            </Button>
-          )}
+      {({ values, errors, handleChange, submitForm, isValid }) => {
+        // Expõe as funções para o modal
+        if (onSubmitForm) {
+          onSubmitForm(submitForm);
+        }
 
-          <Field
-            label="Nome"
-            name="name"
-            error={Boolean(errors.name)}
-            type={"text"}
-            errorMessage={errors.name ?? ""}
-            placeholder={"Insira o nome do comprador"}
-            onChange={(e) => {
-              const replacedValue = e.target.value.replace(/\d/g, "");
-              e.target.value = replacedValue;
-              handleChange(e);
-            }}
-            value={values.name}
-            disabled={isDisabled}
-            readOnly={isDisabled}
-          />
-          <div className="flex md:flex-row flex-col md:gap-1">
+        if (onCancelAction) {
+          onCancelAction(createCancelAction());
+        }
+
+        if (onFormValidation) {
+          const hasChanges = !handleDeepEqual(values, initialValues);
+          const canSave = isValid && hasChanges && ticketInfo.status === "A";
+          onFormValidation(canSave);
+        }
+
+        return (
+          <Form className="flex flex-col space-y-6">
+            {/* Alert removido. Usar toasts via useAlert() */}
             <Field
-              label="CPF"
-              name="cpf"
-              error={Boolean(errors.cpf)}
+              label="Nome"
+              name="name"
+              error={Boolean(errors.name)}
               type={"text"}
-              errorMessage={errors.cpf ?? ""}
-              placeholder={"Insira o CPF do comprador"}
-              maxLength={14}
+              errorMessage={errors.name ?? ""}
+              placeholder={"Insira o nome do comprador"}
+              onChange={(e) => {
+                const replacedValue = e.target.value.replace(/\d/g, "");
+                e.target.value = replacedValue;
+                handleChange(e);
+              }}
+              value={values.name}
+              disabled={isDisabled}
+              readOnly={isDisabled}
+            />
+            <div className="flex md:flex-row flex-col md:gap-4 gap-6">
+              <Field
+                label="CPF"
+                name="cpf"
+                error={Boolean(errors.cpf)}
+                type={"text"}
+                errorMessage={errors.cpf ?? ""}
+                placeholder={"Insira o CPF do comprador"}
+                maxLength={14}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  const updatedValue = handleFormatCPF(value);
+
+                  e.target.value = updatedValue;
+
+                  handleChange(e);
+                }}
+                value={values.cpf}
+                disabled={isDisabled}
+                readOnly={isDisabled}
+              />
+              <Field
+                label="Data de nascimento"
+                name="birthday"
+                error={Boolean(errors.birthday)}
+                type={"date"}
+                errorMessage={errors.birthday ?? ""}
+                placeholder={"Insira a data de nascimento do comprador"}
+                onChange={handleChange}
+                value={values.birthday}
+                disabled={isDisabled}
+                readOnly={isDisabled}
+              />
+            </div>
+            <Field
+              label="Telefone"
+              name="tel"
+              error={Boolean(errors.tel)}
+              type={"text"}
+              errorMessage={errors.tel ?? ""}
+              placeholder={"Insira o telefone do comprador"}
+              maxLength={15}
               onChange={(e) => {
                 const value = e.target.value;
-                const updatedValue = handleFormatCPF(value);
+                const updatedValue = handleFormatTel(value);
 
                 e.target.value = updatedValue;
 
                 handleChange(e);
               }}
-              value={values.cpf}
+              value={values.tel}
               disabled={isDisabled}
               readOnly={isDisabled}
             />
             <Field
-              label="Data de nascimento"
-              name="birthday"
-              error={Boolean(errors.birthday)}
-              type={"date"}
-              errorMessage={errors.birthday ?? ""}
-              placeholder={"Insira a data de nascimento do comprador"}
-              onChange={handleChange}
-              value={values.birthday}
-              disabled={isDisabled}
-              readOnly={isDisabled}
-            />
-          </div>
-          <Field
-            label="Telefone"
-            name="tel"
-            error={Boolean(errors.tel)}
-            type={"text"}
-            errorMessage={errors.tel ?? ""}
-            placeholder={"Insira o telefone do comprador"}
-            maxLength={15}
-            onChange={(e) => {
-              const value = e.target.value;
-              const updatedValue = handleFormatTel(value);
-
-              e.target.value = updatedValue;
-
-              handleChange(e);
-            }}
-            value={values.tel}
-            disabled={isDisabled}
-            readOnly={isDisabled}
-          />
-          <Field
-            label="Vendido por"
-            name="selledBy"
-            error={false}
-            type={"text"}
-            readOnly
-            disabled
-            errorMessage={""}
-            placeholder={"Nome do vendedor"}
-            onChange={handleFieldDisabled}
-            value={ticketInfo.seller.full_name}
-          />
-          <div className="flex md:flex-row flex-col md:gap-1">
-            <Field
-              label="Status"
-              name="status"
+              label="Vendido por"
+              name="selledBy"
               error={false}
               type={"text"}
               readOnly
               disabled
               errorMessage={""}
-              placeholder={"Status do ingresso"}
+              placeholder={"Nome do vendedor"}
               onChange={handleFieldDisabled}
-              value={statusLabel[ticketInfo.status]}
+              value={ticketInfo.seller.full_name}
             />
-            <Field
-              label="Criado em"
-              name="createdAt"
-              error={false}
-              type={"date"}
-              readOnly
-              disabled
-              errorMessage={""}
-              placeholder={"Data de criação"}
-              onChange={handleFieldDisabled}
-              value={createdAt}
-            />
-          </div>
-          <Button
-            disabled={
-              ticketInfo.status !== "A" ||
-              Boolean(handleDeepEqual(values, initialValues))
-            }
-            type="submit"
-            className="mt-1"
-            loading={loading}
-          >
-            Salvar
-          </Button>
-        </Form>
-      )}
+            <div className="flex md:flex-row flex-col md:gap-4 gap-6">
+              <Field
+                label="Status"
+                name="status"
+                error={false}
+                type={"text"}
+                readOnly
+                disabled
+                errorMessage={""}
+                placeholder={"Status do ingresso"}
+                onChange={handleFieldDisabled}
+                value={statusLabel[ticketInfo.status]}
+              />
+              <Field
+                label="Criado em"
+                name="createdAt"
+                error={false}
+                type={"date"}
+                readOnly
+                disabled
+                errorMessage={""}
+                placeholder={"Data de criação"}
+                onChange={handleFieldDisabled}
+                value={createdAt}
+              />
+            </div>
+          </Form>
+        );
+      }}
     </Formik>
   );
 }
