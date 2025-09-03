@@ -66,7 +66,10 @@ export default function TicketTable({
 
         buildTicketPdf({
           ticket: res.result.ticket,
-          event: res.result.event,
+          event: {
+            ...res.result.event,
+            batch: res.result.ticket.batch,
+          },
         }).then((dataUrl) => handleDownloadPdf(dataUrl));
       })
       .catch((e) => console.error(e.message))

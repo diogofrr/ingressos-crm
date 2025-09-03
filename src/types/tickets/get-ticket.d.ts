@@ -9,6 +9,7 @@ export interface TicketDTO {
   cpf: string;
   qrcode: string;
   status: "A" | "U" | "C";
+  batch: number;
 }
 
 export interface EventDTO {

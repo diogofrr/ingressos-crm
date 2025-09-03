@@ -83,7 +83,10 @@ export default function AddUserForm({
             telephone: res.result.ticket.telephone,
             qrcode: res.result.ticket.qrcode,
           },
-          event: res.result.event,
+          event: {
+            ...res.result.event,
+            batch: res.result.ticket.batch, // Usa o batch do ticket
+          },
         }).then((dataUrl) => {
           handleDownloadPdf(dataUrl);
           handleShowMessage(res.msg, "success");
