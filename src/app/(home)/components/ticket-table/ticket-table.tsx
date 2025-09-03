@@ -93,25 +93,25 @@ export default function TicketTable({
     return (
       <thead className="text-xs uppercase">
         <tr>
-          <th scope="col" className="px-6 py-3">
+          <th scope="col" className="px-6 py-3 w-1/4">
             Nome
           </th>
-          <th scope="col" className="px-6 py-3">
+          <th scope="col" className="px-6 py-3 w-1/6">
             CPF
           </th>
-          <th scope="col" className="px-6 py-3">
+          <th scope="col" className="px-6 py-3 w-1/6">
             Telefone
           </th>
-          <th scope="col" className="px-6 py-3">
+          <th scope="col" className="px-6 py-3 w-1/12">
             Lote
           </th>
-          <th scope="col" className="px-6 py-3">
+          <th scope="col" className="px-6 py-3 w-1/12">
             Status
           </th>
-          <th scope="col" className="px-6 py-3">
+          <th scope="col" className="px-6 py-3 w-1/6">
             Vendido por
           </th>
-          <th scope="col" className="px-6 py-3">
+          <th scope="col" className="px-6 py-3 w-1/6">
             <span className="sr-only">Ações</span>
           </th>
         </tr>
@@ -131,18 +131,18 @@ export default function TicketTable({
             >
               <th
                 scope="row"
-                className="px-6 py-4 font-medium whitespace-normal"
+                className="px-6 py-4 font-medium whitespace-normal w-1/4"
               >
                 {full_name}
               </th>
-              <td className="px-6 py-4 min-w-44">{cpf}</td>
-              <td className="px-6 py-4 min-w-44">{telephone}</td>
-              <td className="px-6 py-4 min-w-24">{batch}ª Lote</td>
-              <td className="px-6 py-4 min-w-24">
+              <td className="px-6 py-4 w-1/6">{cpf}</td>
+              <td className="px-6 py-4 w-1/6">{telephone}</td>
+              <td className="px-6 py-4 w-1/12">{batch}ª Lote</td>
+              <td className="px-6 py-4 w-1/12">
                 <StatusCircle status={status} />
               </td>
-              <td className="px-6 py-4 min-w-40">{seller.full_name}</td>
-              <td className="px-6 py-4 text-center min-w-40 sm:min-w-44">
+              <td className="px-6 py-4 w-1/6">{seller.full_name}</td>
+              <td className="px-6 py-4 text-center w-1/6">
                 <div className="hidden sm:flex justify-end gap-4">
                   <button
                     className="hover:bg-purple-100 p-2 rounded-full transition-colors duration-200"
@@ -211,7 +211,6 @@ export default function TicketTable({
                           ).closest(".dropdown") as HTMLElement | null;
                           setSelectedItem(data);
                           handleOpenEditModal();
-                          // fecha o dropdown
                           dropdown
                             ?.querySelector('[role="button"]')
                             ?.dispatchEvent(new Event("blur"));
@@ -268,7 +267,7 @@ export default function TicketTable({
   return (
     <>
       <div className="relative overflow-x-auto w-full">
-        <table className="table table-zebra w-full h-auto text-sm">
+        <table className="table table-zebra w-full text-sm table-fixed h-auto">
           <TableHeader />
           <TableBody />
         </table>
