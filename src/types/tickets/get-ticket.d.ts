@@ -17,6 +17,7 @@ export interface EventDTO {
   time: string;
   addressLine1: string;
   addressLine2: string;
+  batch: number;
 }
 
 export interface TicketWithEvent {
