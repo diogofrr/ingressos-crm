@@ -111,11 +111,11 @@ export default function Card({
               </div>
               <ul
                 tabIndex={0}
-                className="dropdown-content menu menu-sm bg-base-100 rounded-box z-[1] w-52 p-2 shadow"
+                className="dropdown-content menu menu-sm bg-base-100 rounded-box z-[1] w-56 p-3 shadow"
               >
                 <li>
                   <button
-                    className="justify-between"
+                    className="justify-between py-3 px-4 text-base font-medium hover:bg-base-200 transition-colors duration-200"
                     onClick={(e) => {
                       e.preventDefault();
                       e.stopPropagation();
@@ -136,6 +136,7 @@ export default function Card({
                 </li>
                 <li>
                   <button
+                    className="py-3 px-4 text-base font-medium hover:bg-base-200 transition-colors duration-200"
                     onClick={(e) => {
                       e.preventDefault();
                       e.stopPropagation();
