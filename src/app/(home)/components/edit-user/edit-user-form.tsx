@@ -7,10 +7,13 @@ import useAlert from "@/hooks/useAlert";
 import useLoading from "@/hooks/useLoading";
 import { activateTicket } from "@/services/tickets/activate-ticket";
 import { cancelTicket } from "@/services/tickets/cancel-ticket";
+import { getTicket } from "@/services/tickets/get-ticket";
 import { updateTicket } from "@/services/tickets/update-ticket";
 import { SHOW_MESSAGE_FN } from "@/types/global-message";
 import { GetAllTicketsData } from "@/types/tickets/get-all-tickets";
+import { buildTicketPdf } from "@/utils/buildTicketPdf";
 import { handleDeepEqual } from "@/utils/handleDeepEqual";
+import { handleDownloadPdf } from "@/utils/handleDownloadPDF";
 import { handleFormatCPF } from "@/utils/handleFormatCPF";
 import { handleFormatTel } from "@/utils/handleFormatTel";
 import { Form, Formik } from "formik";
@@ -134,10 +137,27 @@ export default function EditUserForm({
     };
 
     await updateTicket(formattedObject)
-      .then((res) => {
+      .then(async (res) => {
         if (res.error) {
           handleShowLocalMessage(res.msg, "danger");
           return;
+        }
+
+        try {
+          const ticketData = await getTicket({ id: ticketInfo.id });
+          if (ticketData.result) {
+            await buildTicketPdf({
+              ticket: ticketData.result.ticket,
+              event: {
+                ...ticketData.result.event,
+                batch: ticketData.result.ticket.batch,
+              },
+            }).then((dataUrl) => {
+              handleDownloadPdf(dataUrl);
+            });
+          }
+        } catch (error) {
+          console.error("Erro ao gerar PDF:", error);
         }
 
         handleGetTickets();
