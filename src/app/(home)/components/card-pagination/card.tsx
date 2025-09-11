@@ -121,14 +121,14 @@ export default function Card({
                       e.stopPropagation();
                       handleDownloadTicket();
                       handleCloseOptions();
-                      // força o fechamento visual do dropdown
-                      (
-                        e.currentTarget.closest(
-                          ".dropdown"
-                        ) as HTMLElement | null
-                      )
-                        ?.querySelector('[role="button"]')
-                        ?.dispatchEvent(new Event("blur"));
+                      const dropdown = e.currentTarget.closest(
+                        ".dropdown"
+                      ) as HTMLElement | null;
+                      const trigger = dropdown?.querySelector(
+                        '[role="button"]'
+                      ) as HTMLElement | null;
+                      trigger?.blur();
+                      dropdown?.classList.remove("dropdown-open");
                     }}
                   >
                     Baixar ingresso
@@ -142,13 +142,14 @@ export default function Card({
                       e.stopPropagation();
                       handleCloseOptions();
                       handleOpenModal();
-                      (
-                        e.currentTarget.closest(
-                          ".dropdown"
-                        ) as HTMLElement | null
-                      )
-                        ?.querySelector('[role="button"]')
-                        ?.dispatchEvent(new Event("blur"));
+                      const dropdown = e.currentTarget.closest(
+                        ".dropdown"
+                      ) as HTMLElement | null;
+                      const trigger = dropdown?.querySelector(
+                        '[role="button"]'
+                      ) as HTMLElement | null;
+                      trigger?.blur();
+                      dropdown?.classList.remove("dropdown-open");
                     }}
                   >
                     Editar ingresso

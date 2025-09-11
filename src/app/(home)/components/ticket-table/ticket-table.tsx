@@ -215,9 +215,11 @@ export default function TicketTable({
                           ).closest(".dropdown") as HTMLElement | null;
                           setSelectedItem(data);
                           handleOpenEditModal();
-                          dropdown
-                            ?.querySelector('[role="button"]')
-                            ?.dispatchEvent(new Event("blur"));
+                          const trigger = dropdown?.querySelector(
+                            '[role="button"]'
+                          ) as HTMLElement | null;
+                          trigger?.blur();
+                          dropdown?.classList.remove("dropdown-open");
                         }}
                         disabled={verifying || downloading}
                       >
@@ -233,9 +235,11 @@ export default function TicketTable({
                           ).closest(".dropdown") as HTMLElement | null;
                           setSelectedItem(data);
                           handleDownloadTicket(id);
-                          dropdown
-                            ?.querySelector('[role="button"]')
-                            ?.dispatchEvent(new Event("blur"));
+                          const trigger = dropdown?.querySelector(
+                            '[role="button"]'
+                          ) as HTMLElement | null;
+                          trigger?.blur();
+                          dropdown?.classList.remove("dropdown-open");
                         }}
                         disabled={verifying || downloading}
                       >
@@ -251,9 +255,11 @@ export default function TicketTable({
                           ).closest(".dropdown") as HTMLElement | null;
                           setSelectedItem(data);
                           handleOpenVerificationModal();
-                          dropdown
-                            ?.querySelector('[role="button"]')
-                            ?.dispatchEvent(new Event("blur"));
+                          const trigger = dropdown?.querySelector(
+                            '[role="button"]'
+                          ) as HTMLElement | null;
+                          trigger?.blur();
+                          dropdown?.classList.remove("dropdown-open");
                         }}
                         disabled={status !== "A" || verifying || downloading}
                       >
