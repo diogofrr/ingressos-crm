@@ -74,7 +74,7 @@ export async function buildTicketPdf({
   if (!finalLogoDataUrl) {
     // Se não foi fornecida logo, usa a logo padrão
     try {
-      const logoData = await convertImageToBase64("/arraia-crm.png");
+      const logoData = await convertImageToBase64("/samba-seu-ze.png");
       finalLogoDataUrl = logoData.dataUrl;
       if (logoData.width && logoData.height) {
         logoDimensions = logoData;
@@ -140,7 +140,7 @@ export async function buildTicketPdf({
   doc.setFontSize(14);
   doc.setTextColor(0, 0, 0);
   doc.text(
-    `${event.title} - ${event.batch}ª Lote`,
+    `Samba Do Seu Zé - ${event.batch}ª Lote`,
     eventBoxX + 10,
     eventBoxY + 25
   );
