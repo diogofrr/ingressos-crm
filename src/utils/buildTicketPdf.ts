@@ -140,7 +140,7 @@ export async function buildTicketPdf({
   doc.setFontSize(14);
   doc.setTextColor(0, 0, 0);
   doc.text(
-    `Samba Do Seu Zé - ${event.batch}ª Lote`,
+    `SAMBA DO SEU ZÉ - ${event.batch}ª LOTE`,
     eventBoxX + 10,
     eventBoxY + 25
   );
