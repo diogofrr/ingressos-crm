@@ -1,30 +1,22 @@
 export const handleDownloadPdf = (data: string) => {
-  // Se já for um data URL de PDF, baixa diretamente
+  // Normaliza para base64 (independente se veio como data URL ou base64 puro)
+  let base64: string = data;
+
   if (typeof data === "string" && data.startsWith("data:application/pdf")) {
-    const link = document.createElement("a");
-    link.href = data;
-    link.download = "ingresso-crm.pdf";
-    link.click();
-    return;
+    const commaIndex = data.indexOf(",");
+    base64 = commaIndex >= 0 ? data.substring(commaIndex + 1) : "";
+  } else if (data.startsWith("data:application/pdf;base64,")) {
+    base64 = data.substring("data:application/pdf;base64,".length);
   }
 
-  // Compatibilidade: base64 com prefixo removido anteriormente
-  const base64WithPossiblePrefix = data;
-  const base64 = base64WithPossiblePrefix.startsWith(
-    "data:application/pdf;base64,"
-  )
-    ? base64WithPossiblePrefix.substring("data:application/pdf;base64,".length)
-    : base64WithPossiblePrefix;
-
-  const bytes = atob(base64);
-  let length = bytes.length;
-  const out = new Uint8Array(length);
-
-  while (length--) {
-    out[length] = bytes.charCodeAt(length);
+  const binaryString = atob(base64);
+  const { length } = binaryString;
+  const byteArray = new Uint8Array(length);
+  for (let index = 0; index < length; index++) {
+    byteArray[index] = binaryString.charCodeAt(index);
   }
 
-  const blob = new Blob([out], { type: "application/pdf" });
+  const blob = new Blob([byteArray], { type: "application/pdf" });
 
   const link = document.createElement("a");
   const url = URL.createObjectURL(blob);
