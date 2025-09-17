@@ -9,6 +9,7 @@ import { SHOW_MESSAGE_FN } from "@/types/global-message";
 import { GetAllTicketsData } from "@/types/tickets/get-all-tickets";
 import { buildTicketPdf } from "@/utils/buildTicketPdf";
 import { handleDownloadPdf } from "@/utils/handleDownloadPDF";
+import { handleSharePdf } from "@/utils/handleSharePdf";
 import EditUserModal from "../edit-user/edit-user-modal";
 
 interface CardProps {
@@ -32,6 +33,10 @@ export default function Card({
     handleStartLoading: handleStartDownload,
     handleStopLoading: handleStopDownload,
   } = useLoading();
+
+  const canNativeShare =
+    typeof navigator !== "undefined" &&
+    typeof (navigator as any).share === "function";
 
   const handleDownloadTicket = async () => {
     handleCloseOptions();
@@ -59,6 +64,40 @@ export default function Card({
             batch: res.result.ticket.batch, // Usa o batch do ticket
           },
         }).then((dataUrl) => handleDownloadPdf(dataUrl, filename));
+      })
+      .catch((e) => {
+        console.error(e.message);
+      })
+      .finally(() => handleStopDownload());
+  };
+
+  const handleShareTicket = async () => {
+    handleCloseOptions();
+    if (downloading) return;
+
+    handleStartDownload();
+    await getTicket({ id: ticket.id })
+      .then((res) => {
+        if (!res.result || res.error) {
+          handleShowMessage(res.msg, "danger");
+          return;
+        }
+
+        const filename = res.result.ticket.full_name;
+        const message = `Segue seu ingresso: ${filename}`;
+
+        return buildTicketPdf({
+          ticket: {
+            full_name: res.result.ticket.full_name,
+            cpf: res.result.ticket.cpf,
+            telephone: res.result.ticket.telephone,
+            qrcode: res.result.ticket.qrcode,
+          },
+          event: {
+            ...res.result.event,
+            batch: res.result.ticket.batch, // Usa o batch do ticket
+          },
+        }).then((dataUrl) => handleSharePdf(dataUrl, filename, message));
       })
       .catch((e) => {
         console.error(e.message);
@@ -136,6 +175,29 @@ export default function Card({
                     Baixar ingresso
                   </button>
                 </li>
+                {canNativeShare && (
+                  <li>
+                    <button
+                      className="justify-between py-3 px-4 text-base font-medium hover:bg-base-200 transition-colors duration-200"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        handleShareTicket();
+                        handleCloseOptions();
+                        const dropdown = e.currentTarget.closest(
+                          ".dropdown"
+                        ) as HTMLElement | null;
+                        const trigger = dropdown?.querySelector(
+                          '[role="button"]'
+                        ) as HTMLElement | null;
+                        trigger?.blur();
+                        dropdown?.classList.remove("dropdown-open");
+                      }}
+                    >
+                      Compartilhar
+                    </button>
+                  </li>
+                )}
                 <li>
                   <button
                     className="py-3 px-4 text-base font-medium hover:bg-base-200 transition-colors duration-200"

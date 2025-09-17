@@ -7,6 +7,7 @@ import { CheckIcon } from "@/assets/img/check-icon";
 import { DownloadIcon } from "@/assets/img/download-icon";
 import { EditIcon } from "@/assets/img/edit-icon";
 import { EllipsisIcon } from "@/assets/img/ellipsis-icon";
+import { ShareIcon } from "@/assets/img/share-icon";
 import useLoading from "@/hooks/useLoading";
 import useModal from "@/hooks/useModal";
 import { getTicket } from "@/services/tickets/get-ticket";
@@ -15,6 +16,7 @@ import { SHOW_MESSAGE_FN } from "@/types/global-message";
 import { GetAllTicketsData } from "@/types/tickets/get-all-tickets";
 import { buildTicketPdf } from "@/utils/buildTicketPdf";
 import { handleDownloadPdf } from "@/utils/handleDownloadPDF";
+import { handleSharePdf } from "@/utils/handleSharePdf";
 import { useState } from "react";
 import EditUserModal from "../edit-user/edit-user-modal";
 
@@ -53,6 +55,10 @@ export default function TicketTable({
     handleStopLoading: handleStopVerification,
   } = useLoading();
 
+  const canNativeShare =
+    typeof navigator !== "undefined" &&
+    typeof (navigator as any).share === "function";
+
   const handleDownloadTicket = async (id: string | number) => {
     if (downloading) return;
 
@@ -73,6 +79,32 @@ export default function TicketTable({
             batch: res.result.ticket.batch,
           },
         }).then((dataUrl) => handleDownloadPdf(dataUrl, filename));
+      })
+      .catch((e) => console.error(e.message))
+      .finally(() => handleStopDownload());
+  };
+
+  const handleShareTicket = async (id: string | number) => {
+    if (downloading) return;
+
+    handleStartDownload();
+    await getTicket({ id })
+      .then((res) => {
+        if (!res.result || res.error) {
+          handleShowMessage(res.msg, "danger");
+          return;
+        }
+
+        const filename = res.result.ticket.full_name;
+        const message = `Segue seu ingresso: ${filename}`;
+
+        buildTicketPdf({
+          ticket: res.result.ticket,
+          event: {
+            ...res.result.event,
+            batch: res.result.ticket.batch,
+          },
+        }).then((dataUrl) => handleSharePdf(dataUrl, filename, message));
       })
       .catch((e) => console.error(e.message))
       .finally(() => handleStopDownload());
@@ -173,6 +205,22 @@ export default function TicketTable({
                       <DownloadIcon className="size-6 cursor-pointer text-blue-600" />
                     </button>
                   )}
+                  {downloading && selectedItem.id === id ? (
+                    <Spinner className="size-6 text-green-500 hidden sm:inline-flex" />
+                  ) : (
+                    <button
+                      className="hover:bg-green-100 p-2 rounded-full transition-colors duration-200 hidden sm:inline-flex"
+                      onClick={() => {
+                        setSelectedItem(data);
+                        handleShareTicket(id);
+                      }}
+                      aria-label="Compartilhar"
+                      title="Compartilhar"
+                      disabled={verifying || downloading}
+                    >
+                      <ShareIcon className="size-6 text-green-600" />
+                    </button>
+                  )}
                   {verifying && selectedItem.id === id ? (
                     <Spinner className="size-6 text-blue-500" />
                   ) : (
@@ -246,6 +294,26 @@ export default function TicketTable({
                         disabled={verifying || downloading}
                       >
                         Baixar
+                      </button>
+                    </li>
+                    <li className="sm:hidden">
+                      <button
+                        className="py-3 px-4 text-base font-medium hover:bg-base-200 transition-colors duration-200"
+                        onClick={(e) => {
+                          const dropdown = (
+                            e.currentTarget as HTMLElement
+                          ).closest(".dropdown") as HTMLElement | null;
+                          setSelectedItem(data);
+                          handleShareTicket(id);
+                          const trigger = dropdown?.querySelector(
+                            '[role="button"]'
+                          ) as HTMLElement | null;
+                          trigger?.blur();
+                          dropdown?.classList.remove("dropdown-open");
+                        }}
+                        disabled={verifying || downloading}
+                      >
+                        Compartilhar
                       </button>
                     </li>
                     <li>
