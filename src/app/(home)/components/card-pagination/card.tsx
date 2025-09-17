@@ -45,6 +45,8 @@ export default function Card({
           return;
         }
 
+        const filename = res.result.ticket.full_name;
+
         return buildTicketPdf({
           ticket: {
             full_name: res.result.ticket.full_name,
@@ -56,7 +58,7 @@ export default function Card({
             ...res.result.event,
             batch: res.result.ticket.batch, // Usa o batch do ticket
           },
-        }).then((dataUrl) => handleDownloadPdf(dataUrl));
+        }).then((dataUrl) => handleDownloadPdf(dataUrl, filename));
       })
       .catch((e) => {
         console.error(e.message);

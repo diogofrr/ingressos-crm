@@ -74,6 +74,8 @@ export default function AddUserForm({
           return;
         }
 
+        const name = res.result.ticket.full_name;
+
         handleGetTickets();
         handleCloseModal();
         return buildTicketPdf({
@@ -88,7 +90,7 @@ export default function AddUserForm({
             batch: res.result.ticket.batch, // Usa o batch do ticket
           },
         }).then((dataUrl) => {
-          handleDownloadPdf(dataUrl);
+          handleDownloadPdf(dataUrl, name);
           handleShowMessage(res.msg, "success");
         });
       })

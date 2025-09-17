@@ -145,17 +145,19 @@ export default function EditUserForm({
 
         try {
           const ticketData = await getTicket({ id: ticketInfo.id });
-          if (ticketData.result) {
-            await buildTicketPdf({
-              ticket: ticketData.result.ticket,
-              event: {
-                ...ticketData.result.event,
-                batch: ticketData.result.ticket.batch,
-              },
-            }).then((dataUrl) => {
-              handleDownloadPdf(dataUrl);
-            });
-          }
+          if (!ticketData.result || ticketData.error) return;
+
+          const filename = ticketData.result.ticket.full_name;
+
+          await buildTicketPdf({
+            ticket: ticketData.result.ticket,
+            event: {
+              ...ticketData.result.event,
+              batch: ticketData.result.ticket.batch,
+            },
+          }).then((dataUrl) => {
+            handleDownloadPdf(dataUrl, filename);
+          });
         } catch (error) {
           console.error("Erro ao gerar PDF:", error);
         }

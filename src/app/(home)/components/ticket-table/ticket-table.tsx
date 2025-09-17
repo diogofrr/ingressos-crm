@@ -64,13 +64,15 @@ export default function TicketTable({
           return;
         }
 
+        const filename = res.result.ticket.full_name;
+
         buildTicketPdf({
           ticket: res.result.ticket,
           event: {
             ...res.result.event,
             batch: res.result.ticket.batch,
           },
-        }).then((dataUrl) => handleDownloadPdf(dataUrl));
+        }).then((dataUrl) => handleDownloadPdf(dataUrl, filename));
       })
       .catch((e) => console.error(e.message))
       .finally(() => handleStopDownload());

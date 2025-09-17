@@ -1,4 +1,4 @@
-export const handleDownloadPdf = (data: string) => {
+export const handleDownloadPdf = (data: string, filename?: string) => {
   // Normaliza para base64 (independente se veio como data URL ou base64 puro)
   let base64: string = data;
 
@@ -21,7 +21,14 @@ export const handleDownloadPdf = (data: string) => {
   const link = document.createElement("a");
   const url = URL.createObjectURL(blob);
   link.href = url;
-  link.download = "ingresso-crm.pdf";
+  const defaultName = "ingresso";
+  const rawName = (filename ?? defaultName).trim().toLowerCase();
+  const sanitized = rawName.replace(/\s+/g, "_").replace(/[\\\/:*?"<>|]+/g, "");
+  const baseName = sanitized || defaultName;
+  const finalName = baseName.toLowerCase().endsWith(".pdf")
+    ? baseName
+    : `${baseName}.pdf`;
+  link.download = finalName;
   link.click();
   URL.revokeObjectURL(url);
 };
