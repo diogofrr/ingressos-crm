@@ -13,9 +13,9 @@ import { SHOW_MESSAGE_FN } from "@/types/global-message";
 import { GetAllTicketsData } from "@/types/tickets/get-all-tickets";
 import { buildTicketPdf } from "@/utils/buildTicketPdf";
 import { handleDeepEqual } from "@/utils/handleDeepEqual";
-import { handleDownloadPdf } from "@/utils/handleDownloadPDF";
 import { handleFormatCPF } from "@/utils/handleFormatCPF";
 import { handleFormatTel } from "@/utils/handleFormatTel";
+import { handleSharePdf } from "@/utils/handleSharePdf";
 import { Form, Formik } from "formik";
 import { useState } from "react";
 import * as Yup from "yup";
@@ -156,7 +156,8 @@ export default function EditUserForm({
               batch: ticketData.result.ticket.batch,
             },
           }).then((dataUrl) => {
-            handleDownloadPdf(dataUrl, filename);
+            const message = `Segue seu ingresso:`;
+            handleSharePdf(dataUrl, filename, message);
           });
         } catch (error) {
           console.error("Erro ao gerar PDF:", error);

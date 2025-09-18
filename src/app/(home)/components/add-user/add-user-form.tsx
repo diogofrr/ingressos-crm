@@ -7,9 +7,9 @@ import useLoading from "@/hooks/useLoading";
 import { registerTicket } from "@/services/tickets/register-ticket";
 import { SHOW_MESSAGE_FN } from "@/types/global-message";
 import { buildTicketPdf } from "@/utils/buildTicketPdf";
-import { handleDownloadPdf } from "@/utils/handleDownloadPDF";
 import { handleFormatCPF } from "@/utils/handleFormatCPF";
 import { handleFormatTel } from "@/utils/handleFormatTel";
+import { handleSharePdf } from "@/utils/handleSharePdf";
 import { Form, Formik } from "formik";
 import * as Yup from "yup";
 
@@ -90,7 +90,8 @@ export default function AddUserForm({
             batch: res.result.ticket.batch, // Usa o batch do ticket
           },
         }).then((dataUrl) => {
-          handleDownloadPdf(dataUrl, name);
+          const message = `Segue seu ingresso:`;
+          handleSharePdf(dataUrl, name, message);
           handleShowMessage(res.msg, "success");
         });
       })
